@@ -10,12 +10,33 @@
     <string name="actions_header">Actions</string>
 
     <!-- App settings -->
+    <string name="settings_category_security">Security</string>
+    <string name="settings_category_display">Display &amp; language</string>
     <string name="setting_theme">Theme</string>
     <string name="theme_system">System default</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="setting_language">Language</string>
     <string name="language_auto">Automatic (device language)</string>
+    <string name="setting_app_lock">App lock</string>
+    <string name="app_lock_on">On</string>
+    <string name="app_lock_off">Off</string>
+    <string name="setting_relock">Lock again</string>
+    <string name="relock_immediately">Immediately</string>
+    <string name="relock_1m">After 1 minute</string>
+    <string name="relock_5m">After 5 minutes</string>
+    <string name="relock_on_close">Only when the app is closed</string>
+
+    <!-- Lock screen / authentication -->
+    <string name="lock_title">The app is locked</string>
+    <string name="unlock">Unlock</string>
+    <string name="auth_prompt_title">Unlock %1$s</string>
+    <string name="auth_prompt_subtitle">Fingerprint, face or screen lock</string>
+    <string name="auth_confirm_change">Confirm change</string>
+    <string name="lock_unavailable">No screen lock is set on this device, so the app cannot be locked. Set a PIN, pattern or fingerprint in the device settings.</string>
+    <string name="lock_unavailable_short">No screen lock on this device</string>
+    <string name="open_security_settings">Open security settings</string>
+    <string name="continue_without_lock">Continue without lock</string>
     <string name="language_en" translatable="false">English</string>
     <string name="language_he" translatable="false">עברית</string>
 

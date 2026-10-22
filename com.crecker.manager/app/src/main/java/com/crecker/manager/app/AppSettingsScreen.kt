@@ -1,5 +1,6 @@
 package com.crecker.manager.app
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,15 +15,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,7 +47,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.crecker.manager.R
+import com.crecker.manager.core.security.DeviceAuth
 import com.crecker.manager.core.settings.AppLanguage
+import com.crecker.manager.core.settings.RelockTimeout
 import com.crecker.manager.core.settings.ThemeMode
 import com.crecker.manager.graph
 
@@ -52,17 +60,36 @@ private val ThemeMode.icon: ImageVector
         ThemeMode.DARK -> Icons.Default.DarkMode
     }
 
-private enum class SettingDialog { THEME, LANGUAGE }
+private enum class SettingDialog { THEME, LANGUAGE, LOCK, RELOCK }
 
 /** הגדרות כלליות של האפליקציה. כל הגדרה פותחת דיאלוג בחירה. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSettingsScreen(onBack: () -> Unit) {
-    val prefs = LocalContext.current.graph.appPreferences
+    val context = LocalContext.current
+    val prefs = context.graph.appPreferences
     // שינוי מצב תצוגה/שפה יוצר מחדש את ה-Activity, אז הערכים נקראים מחדש בכל מקרה
     var theme by remember { mutableStateOf(prefs.themeMode) }
     val language = remember { AppLanguage.current() }
     var dialog by remember { mutableStateOf<SettingDialog?>(null) }
+    var lockEnabled by remember { mutableStateOf(prefs.lockEnabled) }
+    var relock by remember { mutableStateOf(prefs.relockTimeout) }
+    val lockAvailable = remember { DeviceAuth.isAvailable(context) }
+    val confirmTitle = stringResource(R.string.auth_confirm_change)
+    val promptSubtitle = stringResource(R.string.auth_prompt_subtitle)
+    val unavailableMessage = stringResource(R.string.lock_unavailable_short)
+
+    /**
+     * שינוי בהגדרות הנעילה מחייב אימות – כדי שמי שמחזיק את המכשיר פתוח לא יוכל לבטל אותה.
+     * בלי נעילת מסך במכשיר אין מול מה לאמת: הפעלת הנעילה נחסמת, כל שינוי אחר מוחל ישירות.
+     */
+    fun confirmLockChange(enablesLock: Boolean, apply: () -> Unit) {
+        if (!lockAvailable) {
+            if (enablesLock) Toast.makeText(context, unavailableMessage, Toast.LENGTH_LONG).show() else apply()
+            return
+        }
+        DeviceAuth.authenticate(context, confirmTitle, promptSubtitle) { ok -> if (ok) apply() }
+    }
 
     Scaffold(
         topBar = {
@@ -76,6 +103,24 @@ fun AppSettingsScreen(onBack: () -> Unit) {
     ) { padding ->
         LazyColumn(Modifier.padding(padding)) {
             item {
+                CategoryHeader(stringResource(R.string.settings_category_security))
+                SettingItem(
+                    Icons.Default.Fingerprint,
+                    stringResource(R.string.setting_app_lock),
+                    stringResource(if (lockEnabled) R.string.app_lock_on else R.string.app_lock_off) +
+                        if (lockEnabled && !lockAvailable) " · " + stringResource(R.string.lock_unavailable_short) else "",
+                ) {
+                    dialog = SettingDialog.LOCK
+                }
+                HorizontalDivider()
+                if (lockEnabled) {
+                    SettingItem(Icons.Default.Timer, stringResource(R.string.setting_relock), stringResource(relock.label)) {
+                        dialog = SettingDialog.RELOCK
+                    }
+                    HorizontalDivider()
+                }
+
+                CategoryHeader(stringResource(R.string.settings_category_display))
                 SettingItem(Icons.Default.Palette, stringResource(R.string.setting_theme), stringResource(theme.label)) {
                     dialog = SettingDialog.THEME
                 }
@@ -113,8 +158,52 @@ fun AppSettingsScreen(onBack: () -> Unit) {
                 if (it != language) it.apply()
             },
         )
+        SettingDialog.LOCK -> ChoiceDialog(
+            title = stringResource(R.string.setting_app_lock),
+            options = listOf(true, false),
+            selected = lockEnabled,
+            label = { stringResource(if (it) R.string.app_lock_on else R.string.app_lock_off) },
+            icon = { if (it) Icons.Default.Lock else Icons.Default.LockOpen },
+            onDismiss = { dialog = null },
+            onSelect = { enabled ->
+                dialog = null
+                if (enabled != lockEnabled) {
+                    confirmLockChange(enablesLock = enabled) {
+                        lockEnabled = enabled
+                        prefs.lockEnabled = enabled
+                    }
+                }
+            },
+        )
+        SettingDialog.RELOCK -> ChoiceDialog(
+            title = stringResource(R.string.setting_relock),
+            options = RelockTimeout.entries,
+            selected = relock,
+            label = { stringResource(it.label) },
+            onDismiss = { dialog = null },
+            onSelect = { timeout ->
+                dialog = null
+                if (timeout != relock) {
+                    confirmLockChange(enablesLock = false) {
+                        relock = timeout
+                        prefs.relockTimeout = timeout
+                    }
+                }
+            },
+        )
         null -> Unit
     }
+}
+
+/** כותרת קטגוריה – באותו סגנון כמו הקטגוריות במסך הבית. */
+@Composable
+private fun CategoryHeader(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
+    )
 }
 
 @Composable

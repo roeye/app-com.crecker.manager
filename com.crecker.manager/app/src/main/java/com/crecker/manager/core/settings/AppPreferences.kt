@@ -58,9 +58,29 @@ class AppPreferences(context: Context) {
 
     fun applyTheme() = AppCompatDelegate.setDefaultNightMode(themeMode.nightMode)
 
+    /** נעילת אפליקציה (טביעת אצבע / פנים / נעילת מסך). פעילה כברירת מחדל. */
+    var lockEnabled: Boolean
+        get() = prefs.getBoolean(KEY_LOCK_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(KEY_LOCK_ENABLED, value) }
+
+    var relockTimeout: RelockTimeout
+        get() = prefs.getString(KEY_RELOCK, null)
+            ?.let { runCatching { RelockTimeout.valueOf(it) }.getOrNull() } ?: RelockTimeout.ONE_MINUTE
+        set(value) = prefs.edit { putString(KEY_RELOCK, value.name) }
+
     private companion object {
         const val KEY_THEME = "theme_mode"
+        const val KEY_LOCK_ENABLED = "lock_enabled"
+        const val KEY_RELOCK = "relock_timeout"
     }
+}
+
+/** כמה זמן ברקע עד שהאפליקציה ננעלת שוב. null = רק כשהאפליקציה נסגרת. */
+enum class RelockTimeout(val millis: Long?, @StringRes val label: Int) {
+    IMMEDIATELY(0, R.string.relock_immediately),
+    ONE_MINUTE(60_000, R.string.relock_1m),
+    FIVE_MINUTES(300_000, R.string.relock_5m),
+    ON_CLOSE(null, R.string.relock_on_close),
 }
 
 /**

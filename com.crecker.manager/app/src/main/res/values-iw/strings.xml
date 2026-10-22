@@ -8,12 +8,33 @@
     <string name="actions_header">פעולות</string>
 
     <!-- App settings -->
+    <string name="settings_category_security">אבטחה</string>
+    <string name="settings_category_display">תצוגה ושפה</string>
     <string name="setting_theme">מצב תצוגה</string>
     <string name="theme_system">לפי המכשיר</string>
     <string name="theme_light">בהיר</string>
     <string name="theme_dark">כהה</string>
     <string name="setting_language">שפה</string>
     <string name="language_auto">אוטומטי (שפת המכשיר)</string>
+    <string name="setting_app_lock">נעילת אפליקציה</string>
+    <string name="app_lock_on">פעילה</string>
+    <string name="app_lock_off">כבויה</string>
+    <string name="setting_relock">נעילה מחדש</string>
+    <string name="relock_immediately">מיד</string>
+    <string name="relock_1m">אחרי דקה</string>
+    <string name="relock_5m">אחרי 5 דקות</string>
+    <string name="relock_on_close">רק כשהאפליקציה נסגרת</string>
+
+    <!-- Lock screen / authentication -->
+    <string name="lock_title">האפליקציה נעולה</string>
+    <string name="unlock">בטל נעילה</string>
+    <string name="auth_prompt_title">ביטול נעילה – %1$s</string>
+    <string name="auth_prompt_subtitle">טביעת אצבע, זיהוי פנים או נעילת מסך</string>
+    <string name="auth_confirm_change">אישור שינוי</string>
+    <string name="lock_unavailable">לא מוגדרת נעילת מסך במכשיר, ולכן אי אפשר לנעול את האפליקציה. הגדר PIN, pattern או טביעת אצבע בהגדרות המכשיר.</string>
+    <string name="lock_unavailable_short">אין נעילת מסך במכשיר</string>
+    <string name="open_security_settings">פתח הגדרות אבטחה</string>
+    <string name="continue_without_lock">המשך ללא נעילה</string>
 
     <!-- Run status / trigger -->
     <string name="status_running">רץ…</string>

@@ -21,11 +21,14 @@ com.crecker.manager/
 ├── app/                   ה-host
 │   ├── SystemRegistry.kt  רשימת כל המערכות
 │   ├── HomeScreens.kt     מסך בית + מסך מערכת
-│   ├── AppSettingsScreen.kt  הגדרות האפליקציה (מצב תצוגה, שפה)
+│   ├── AppSettingsScreen.kt  הגדרות האפליקציה (מצב תצוגה, שפה, נעילה)
+│   ├── LockScreen.kt      מסך הנעילה
+│   ├── AppLogo.kt         הלוגו בתוך ה-UI
 │   └── AppNavHost.kt      ניווט
 ├── core/                  תשתית משותפת – לא תלויה באף מערכת
 │   ├── model/             ManagedSystem, SystemAction, RunModels (לוג, סטטוס, ActionContext)
 │   ├── run/               ActionRunner, RunHistory, ActionScheduler (+Worker), Notifications
+│   ├── security/          AppLock (מצב נעילה), DeviceAuth (BiometricPrompt)
 │   ├── settings/          SettingsStore/ActionSettings (DataStore), SecretCipher (Keystore),
 │   │                      AppPreferences / ThemeMode / AppLanguage, Context.localized()
 │   ├── net/               HttpFetcher
@@ -149,3 +152,19 @@ SettingsScaffold(title, loaded = remote.loaded && schedule.loaded, onBack,
 - **מחוץ ל-UI** (Worker, התראות): `context.localized()`. ב-Android 12 ומטה ה-Application context לא מתעדכן לבד לשפה שנבחרה.
 - **בקוד בלי Context** (uploaders, ולידציה): זורקים `LocalizedException(R.string.x, args)` או מחזירים string res, ומתרגמים ב-`describe(context)`.
 - **הלוג נשמר כטקסט**, בשפה שהייתה פעילה בזמן ההרצה. הרצות ישנות לא מתורגמות אחרי החלפת שפה.
+
+## נעילת אפליקציה
+
+כניסה לאפליקציה רק אחרי אימות מול נעילת המכשיר.
+
+- **`DeviceAuth`** (`core/security`): עטיפה של `BiometricPrompt` עם `BIOMETRIC_WEAK | DEVICE_CREDENTIAL`, כלומר טביעת אצבע או זיהוי פנים, עם PIN / pattern / סיסמה כגיבוי. נבחר WEAK ולא STRONG, כי ברוב המכשירים זיהוי פנים מסווג כ-weak, והצירוף STRONG + DEVICE_CREDENTIAL לא נתמך לפני Android 11. האפליקציה מקבלת רק הצלחה או כשל, בלי שום מידע ביומטרי.
+- **`AppLock`**: מחזיק את מצב הנעילה (`locked: StateFlow`) ונרשם ל-`ProcessLifecycleOwner`:
+  - **בהפעלה:** נעולה, אם הנעילה פעילה.
+  - **חזרה מהרקע:** ננעלת אם עבר הזמן שהוגדר (`RelockTimeout`: מיד / דקה / 5 דקות / רק בסגירה).
+  - **יציאה עם "חזרה":** ננעלת (`MainActivity.onDestroy` כש-`isFinishing`).
+  - **בזמן אימות** (`authenticating`): מעבר לרקע לא נספר. ב-Android 10 ומטה מסך ה-PIN הוא Activity נפרד, ובלי זה האפליקציה הייתה ננעלת שוב מיד אחרי האימות.
+- **`LockScreen`**: מסך שמכסה את האפליקציה ומציג את דיאלוג האימות אוטומטית. ה-NavHost נשאר מתחת לנעילה, כך שאחרי ביטול הנעילה חוזרים לאותו מסך. "חזרה" במסך הנעול יוצאת מהאפליקציה.
+- **מכשיר בלי נעילת מסך:** מוצגת הודעה עם כפתור להגדרות האבטחה של המכשיר ואפשרות "המשך ללא נעילה". אין מול מה לאמת, ולכן אין טעם לחסום.
+- **שינוי הגדרות הנעילה** (כיבוי או זמן נעילה מחדש) דורש אימות.
+- **`FLAG_SECURE`** על ה-Activity: אין צילומי מסך, ואין תצוגה מקדימה במסך האפליקציות האחרונות.
+- **פעולות מתוזמנות** (WorkManager) ממשיכות לרוץ גם כשהאפליקציה נעולה. הנעילה מגינה רק על הממשק.

@@ -22,7 +22,8 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 - Temp files go in `ActionContext.workDir` (auto-deleted). Blocking IO inside actions: wrap in `runInterruptible`, call `currentCoroutineContext().ensureActive()` between steps, always rethrow `CancellationException`.
 - Reuse `core/ui` building blocks (`SettingsScaffold`, `RemoteSettingsSection`, `ScheduleSection`, `LogView`) instead of new screens.
 - No DI framework – shared singletons live in `AppGraph` (`context.graph`).
-- `MainActivity` is an `AppCompatActivity` with an AppCompat theme – required for per-app language and night mode (`AppCompatDelegate`). App-wide preferences: `AppPreferences` (theme) and `AppLanguage` (language, persisted by the system/AppCompat).
+- `MainActivity` is an `AppCompatActivity` with an AppCompat theme – required for per-app language and night mode (`AppCompatDelegate`). App-wide preferences: `AppPreferences` (theme, app lock) and `AppLanguage` (language, persisted by the system/AppCompat).
+- App lock: `AppLock` + `DeviceAuth` (`core/security`). Any setting that weakens security must go through `DeviceAuth.authenticate`. The activity uses `FLAG_SECURE` – keep it.
 - Dependencies go through `gradle/libs.versions.toml`. R8 rules: `app/src/main/keepRules/rules.keep`.
 
 ## Documentation

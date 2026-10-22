@@ -2,9 +2,11 @@ package com.crecker.manager
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.crecker.manager.core.run.ActionRunner
 import com.crecker.manager.core.run.Notifications
 import com.crecker.manager.core.run.RunHistory
+import com.crecker.manager.core.security.AppLock
 import com.crecker.manager.core.settings.AppPreferences
 import com.crecker.manager.core.settings.SettingsStore
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +21,7 @@ class ManagerApp : Application() {
         super.onCreate()
         graph = AppGraph(this)
         graph.appPreferences.applyTheme()
+        ProcessLifecycleOwner.get().lifecycle.addObserver(graph.appLock)
         Notifications.createChannels(this)
     }
 }
@@ -27,6 +30,7 @@ class ManagerApp : Application() {
 class AppGraph(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val appPreferences = AppPreferences(context)
+    val appLock = AppLock(appPreferences)
     val settings = SettingsStore(context)
     val history = RunHistory(context)
     val runner = ActionRunner(context, settings, history, appScope)
