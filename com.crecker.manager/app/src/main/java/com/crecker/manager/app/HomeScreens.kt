@@ -1,5 +1,9 @@
 package com.crecker.manager.app
 
+import android.app.Activity
+import android.os.SystemClock
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,17 +24,27 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.crecker.manager.R
 import com.crecker.manager.core.model.ManagedSystem
 import com.crecker.manager.core.model.SystemAction
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /** מסך הבית – כל המערכות, מקובצות לפי קטגוריה. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(onOpenSystem: (ManagedSystem) -> Unit, onOpenSettings: () -> Unit) {
+    DoubleBackToExit()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,6 +79,38 @@ fun HomeScreen(onOpenSystem: (ManagedSystem) -> Unit, onOpenSettings: () -> Unit
         }
     }
 }
+
+/**
+ * "חזרה" ראשונה מציגה toast; "חזרה" נוספת בתוך [EXIT_WINDOW_MS] יוצאת מהאפליקציה.
+ * ה-toast מבוטל ידנית אחרי שנייה – LENGTH_SHORT של אנדרואיד ארוך יותר.
+ */
+@Composable
+private fun DoubleBackToExit() {
+    val context = LocalContext.current
+    val message = stringResource(R.string.press_back_again_to_exit)
+    val scope = rememberCoroutineScope()
+    var toast by remember { mutableStateOf<Toast?>(null) }
+    var lastBackAt by remember { mutableLongStateOf(0L) }
+
+    BackHandler {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastBackAt < EXIT_WINDOW_MS) {
+            toast?.cancel()
+            (context as? Activity)?.finish()
+            return@BackHandler
+        }
+        lastBackAt = now
+        toast?.cancel()
+        val shown = Toast.makeText(context, message, Toast.LENGTH_SHORT).also { it.show() }
+        toast = shown
+        scope.launch {
+            delay(EXIT_WINDOW_MS)
+            shown.cancel()
+        }
+    }
+}
+
+private const val EXIT_WINDOW_MS = 1_000L
 
 /** מסך מערכת – רשימת הפעולות שלה. */
 @OptIn(ExperimentalMaterial3Api::class)

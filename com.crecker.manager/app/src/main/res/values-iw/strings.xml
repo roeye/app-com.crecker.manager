@@ -1,5 +1,6 @@
 <resources>
     <!-- Common -->
+    <string name="press_back_again_to_exit">לחץ שוב על חזרה כדי לצאת</string>
     <string name="back">חזרה</string>
     <string name="save">שמירה</string>
     <string name="cancel">ביטול</string>
