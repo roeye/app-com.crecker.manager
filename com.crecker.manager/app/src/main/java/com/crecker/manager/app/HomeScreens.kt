@@ -34,7 +34,7 @@ fun HomeScreen(onOpenSystem: (ManagedSystem) -> Unit, onOpenSettings: () -> Unit
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = { LogoTitle(stringResource(R.string.app_name)) },
                 actions = {
                     IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, stringResource(R.string.settings)) }
                 },
