@@ -8,8 +8,10 @@ Gradle needs a JDK – use Android Studio's bundled one:
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
-.\gradlew.bat :app:assembleDebug :app:testDebugUnitTest
+.\gradlew.bat :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
+
+Lint must pass with no errors (it fails the build). Notably: in composables read strings via `stringResource` / `LocalResources.current`, never `LocalContext.current.getString` (`LocalContextGetResourceValueCall`).
 
 ## Conventions
 
@@ -24,7 +26,10 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 - No DI framework – shared singletons live in `AppGraph` (`context.graph`).
 - `MainActivity` is an `AppCompatActivity` with an AppCompat theme – required for per-app language and night mode (`AppCompatDelegate`). App-wide preferences: `AppPreferences` (theme, app lock) and `AppLanguage` (language, persisted by the system/AppCompat).
 - App lock: `AppLock` + `DeviceAuth` (`core/security`). Any setting that weakens security must go through `DeviceAuth.authenticate`. The activity uses `FLAG_SECURE` – keep it.
-- Dependencies go through `gradle/libs.versions.toml`. R8 rules: `app/src/main/keepRules/rules.keep`.
+- App settings screen: settings are grouped by category (Security first, then Display & language); each setting has an icon and opens a `ChoiceDialog`.
+- Icons: launcher icon is a vector adaptive icon (background / foreground / monochrome in `res/drawable`); notifications use `ic_notification` (single color). In-app logo: `AppLogo` / `LogoTitle`. Material icons come from `material-icons-extended`.
+- Home screen exits only on a double back press within 1 s (`DoubleBackToExit`).
+- Dependencies go through `gradle/libs.versions.toml` (the user sometimes bumps versions there themselves – keep their versions). R8 rules: `app/src/main/keepRules/rules.keep`.
 
 ## Documentation
 

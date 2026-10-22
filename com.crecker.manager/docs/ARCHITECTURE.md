@@ -6,8 +6,11 @@
 ה-host לא יודע כלום על מה שבתוך מערכת, ולכן מוסיפים מערכות ופעולות בלי לגעת בקוד קיים.
 
 ```
+[מסך נעילה – אם הנעילה פעילה]
+        ↓
 מסך בית (מערכות לפי קטגוריה)  →  מסך מערכת (רשימת פעולות)  →  מסך פעולה
-   └─ ⚙ הגדרות האפליקציה                                      
+   ├─ ⚙ הגדרות האפליקציה
+   └─ "חזרה" ×2 תוך שנייה → יציאה
                                                                  ├─ ⚙ הגדרות
                                                                  └─ ☰ היסטוריית הרצות → הרצה
 ```
@@ -16,14 +19,14 @@
 
 ```
 com.crecker.manager/
-├── ManagerApp.kt          Application + AppGraph (appPreferences, settings, history, runner)
-├── MainActivity.kt        AppCompatActivity + Theme + AppNavHost
+├── ManagerApp.kt          Application + AppGraph (appPreferences, appLock, settings, history, runner)
+├── MainActivity.kt        AppCompatActivity + Theme + AppNavHost + שכבת נעילה + FLAG_SECURE
 ├── app/                   ה-host
 │   ├── SystemRegistry.kt  רשימת כל המערכות
-│   ├── HomeScreens.kt     מסך בית + מסך מערכת
-│   ├── AppSettingsScreen.kt  הגדרות האפליקציה (מצב תצוגה, שפה, נעילה)
+│   ├── HomeScreens.kt     מסך בית (כולל "חזרה" כפולה ליציאה) + מסך מערכת
+│   ├── AppSettingsScreen.kt  הגדרות האפליקציה: אבטחה (נעילה), תצוגה ושפה
 │   ├── LockScreen.kt      מסך הנעילה
-│   ├── AppLogo.kt         הלוגו בתוך ה-UI
+│   ├── AppLogo.kt         AppLogo / LogoTitle – הלוגו בכותרות ובמסך הנעילה
 │   └── AppNavHost.kt      ניווט
 ├── core/                  תשתית משותפת – לא תלויה באף מערכת
 │   ├── model/             ManagedSystem, SystemAction, RunModels (לוג, סטטוס, ActionContext)
@@ -135,7 +138,12 @@ SettingsScaffold(title, loaded = remote.loaded && schedule.loaded, onBack,
 
 ## הגדרות האפליקציה
 
-מסך ⚙ במסך הבית (`AppSettingsScreen`). כל הגדרה פותחת דיאלוג בחירה, והבחירה מוחלת מיד.
+מסך ⚙ במסך הבית (`AppSettingsScreen`). ההגדרות מחולקות לקטגוריות לפי הסדר הזה:
+
+1. **אבטחה:** נעילת אפליקציה, נעילה מחדש (ראו "נעילת אפליקציה").
+2. **תצוגה ושפה:** מצב תצוגה, שפה.
+
+כל הגדרה פותחת דיאלוג בחירה (`ChoiceDialog`), והבחירה מוחלת מיד. הגדרה חדשה נכנסת לקטגוריה המתאימה (`CategoryHeader`) עם אייקון, ובדיאלוג משלה.
 
 - **מצב תצוגה** (`ThemeMode`: לפי המכשיר / בהיר / כהה). נשמר ב-`AppPreferences` (SharedPreferences, כי צריך לקרוא אותו באופן סינכרוני ב-`Application.onCreate`) ומוחל עם `AppCompatDelegate.setDefaultNightMode`.
 - **שפה** (`AppLanguage`: אוטומטי / English / עברית). משתמש ב-per-app language של אנדרואיד דרך `AppCompatDelegate.setApplicationLocales`. ב-Android 13 ומעלה המערכת שומרת את הבחירה (והיא מופיעה גם בהגדרות המכשיר, דרך `res/xml/locales_config.xml`). בגרסאות קודמות AppCompat שומר אותה (`autoStoreLocales` במניפסט).
@@ -168,3 +176,18 @@ SettingsScaffold(title, loaded = remote.loaded && schedule.loaded, onBack,
 - **שינוי הגדרות הנעילה** (כיבוי או זמן נעילה מחדש) דורש אימות.
 - **`FLAG_SECURE`** על ה-Activity: אין צילומי מסך, ואין תצוגה מקדימה במסך האפליקציות האחרונות.
 - **פעולות מתוזמנות** (WorkManager) ממשיכות לרוץ גם כשהאפליקציה נעולה. הנעילה מגינה רק על הממשק.
+
+## ניווט ויציאה
+
+- **"חזרה" במסך הבית:** הלחיצה הראשונה מציגה toast "לחץ שוב על חזרה כדי לצאת". לחיצה נוספת תוך שנייה יוצאת מהאפליקציה (`DoubleBackToExit` ב-`HomeScreens.kt`). ה-toast מוסתר בקוד אחרי שנייה, כי המשך הקצר של toast באנדרואיד הוא כ-2 שניות.
+- יציאה מהאפליקציה נועלת אותה לפתיחה הבאה, אם הנעילה פעילה.
+- **בשאר המסכים** "חזרה" מנווט למסך הקודם. במסך הנעילה "חזרה" יוצא מהאפליקציה.
+
+## אייקון ומיתוג
+
+- **אייקון האפליקציה:** adaptive icon וקטורי (`mipmap-anydpi/ic_launcher*.xml`). אין קבצי bitmap, כי minSdk 26 תמיד משתמש באייקון ה-adaptive.
+  - `drawable/ic_launcher_background.xml`: גרדיאנט אינדיגו-סגול (`#4F46E5` → `#7C3AED`).
+  - `drawable/ic_launcher_foreground.xml`: גריד 2×2 של אריחים (המערכות). האריח הענבר (`#FBBF24`) עם ▶ מייצג הרצת פעולה. התוכן נמצא בתוך האזור הבטוח (66dp).
+  - `drawable/ic_launcher_monochrome.xml`: גרסה בצבע אחד ל-Themed Icons (Android 13+).
+- **`drawable/ic_notification.xml`**: אייקון בצבע אחד לשורת ההתראות. אסור להשתמש שם באייקון הצבעוני.
+- **`AppLogo` / `LogoTitle`**: הלוגו בתוך ה-UI (כותרות מסך הבית וההגדרות, מסך הנעילה). `painterResource` לא תומך ב-adaptive icon, ולכן הרקע והחזית מורכבים ידנית, והחזית מוגדלת פי 1.6.
