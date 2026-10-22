@@ -1,5 +1,6 @@
 package com.crecker.manager.core.model
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -12,11 +13,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 interface ManagedSystem {
     /** מזהה יציב – משמש בניווט, בהגדרות ובהיסטוריה. אסור לשנות אחרי שיש נתונים שמורים. */
     val id: String
-    val name: String
-    val description: String get() = ""
 
-    /** תווית לקיבוץ במסך הבית ("אתרים", "שרתים"...). */
-    val category: String
+    /** שם המערכת (שם פרטי, למשל דומיין – לא מתורגם). */
+    val name: String
+
+    @get:StringRes
+    val description: Int? get() = null
+
+    /** תווית לקיבוץ במסך הבית (R.string.category_*). */
+    @get:StringRes
+    val category: Int
     val icon: ImageVector
     val actions: List<SystemAction>
 

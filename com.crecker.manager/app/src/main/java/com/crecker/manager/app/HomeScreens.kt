@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -29,13 +30,22 @@ import com.crecker.manager.core.model.SystemAction
 /** מסך הבית – כל המערכות, מקובצות לפי קטגוריה. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onOpenSystem: (ManagedSystem) -> Unit) {
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) }) { padding ->
+fun HomeScreen(onOpenSystem: (ManagedSystem) -> Unit, onOpenSettings: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                actions = {
+                    IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, stringResource(R.string.settings)) }
+                },
+            )
+        },
+    ) { padding ->
         LazyColumn(Modifier.padding(padding)) {
             SystemRegistry.systems.groupBy { it.category }.forEach { (category, systems) ->
                 item(key = "category:$category") {
                     Text(
-                        category,
+                        stringResource(category),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
@@ -65,22 +75,22 @@ fun SystemScreen(system: ManagedSystem, onBack: () -> Unit, onOpenAction: (Syste
             TopAppBar(
                 title = { Text(system.name) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "חזרה") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
             )
         },
     ) { padding ->
         LazyColumn(Modifier.padding(padding)) {
-            if (system.description.isNotBlank()) {
+            system.description?.let { description ->
                 item {
                     Card(Modifier.fillMaxWidth().padding(16.dp)) {
-                        Text(system.description, Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(description), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
             item {
                 Text(
-                    "פעולות",
+                    stringResource(R.string.actions_header),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -90,7 +100,7 @@ fun SystemScreen(system: ManagedSystem, onBack: () -> Unit, onOpenAction: (Syste
                 ListItem(
                     modifier = Modifier.clickable { onOpenAction(action) },
                     leadingContent = { Icon(action.icon, null) },
-                    headlineContent = { Text(action.title) },
+                    headlineContent = { Text(stringResource(action.title)) },
                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
                 )
                 HorizontalDivider()

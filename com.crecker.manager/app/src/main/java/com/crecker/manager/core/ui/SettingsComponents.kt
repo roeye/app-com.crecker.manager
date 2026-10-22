@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,10 +51,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.crecker.manager.R
 import com.crecker.manager.core.remote.RemoteConfig
 import com.crecker.manager.core.remote.RemoteProtocol
 import com.crecker.manager.core.remote.RemoteSettings
@@ -61,22 +65,23 @@ import com.crecker.manager.core.remote.RemoteUploader
 import com.crecker.manager.core.run.ActionScheduler
 import com.crecker.manager.core.run.Notifications
 import com.crecker.manager.core.run.ScheduleKeys
-import com.crecker.manager.core.run.describe
+import com.crecker.manager.core.model.describe
 import com.crecker.manager.core.settings.ActionSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** שלד למסך הגדרות: כותרת, חזרה, תוכן נגלל וכפתור שמירה. [onSave] מחזיר הודעת שגיאה או null. */
+/** שלד למסך הגדרות: כותרת, חזרה, תוכן נגלל וכפתור שמירה. [onSave] מחזיר שגיאה (string res) או null. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScaffold(
     title: String,
     loaded: Boolean,
     onBack: () -> Unit,
-    onSave: suspend () -> String?,
+    onSave: suspend () -> Int?,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val resources = LocalResources.current
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var saving by remember { mutableStateOf(false) }
@@ -85,7 +90,7 @@ fun SettingsScaffold(
             TopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "חזרה") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
             )
         },
@@ -113,10 +118,10 @@ fun SettingsScaffold(
                         saving = true
                         val error = onSave()
                         saving = false
-                        if (error == null) onBack() else snackbar.showSnackbar(error)
+                        if (error == null) onBack() else snackbar.showSnackbar(resources.getString(error))
                     }
                 },
-            ) { Text("שמירה") }
+            ) { Text(stringResource(R.string.save)) }
         }
     }
 }
@@ -151,9 +156,10 @@ class RemoteFormState(private val settings: ActionSettings, private val defaultD
         loaded = true
     }
 
-    fun validationError(): String? = when {
-        port.isNotBlank() && port.toIntOrNull()?.takeIf { it in 1..65535 } == null -> "פורט לא תקין"
-        remoteDir.isNotBlank() && !remoteDir.startsWith("/") -> "תיקיית היעד צריכה להתחיל ב-/"
+    @StringRes
+    fun validationError(): Int? = when {
+        port.isNotBlank() && port.toIntOrNull()?.takeIf { it in 1..65535 } == null -> R.string.error_invalid_port
+        remoteDir.isNotBlank() && !remoteDir.startsWith("/") -> R.string.error_dir_slash
         else -> null
     }
 
@@ -186,12 +192,14 @@ fun rememberRemoteFormState(settings: ActionSettings, defaultDir: String): Remot
 
 @Composable
 fun RemoteSettingsSection(state: RemoteFormState) {
+    val resources = LocalResources.current
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showPassword by remember { mutableStateOf(false) }
     var testing by remember { mutableStateOf(false) }
     var testResult by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
 
-    SectionTitle("חיבור לשרת")
+    SectionTitle(stringResource(R.string.remote_section))
     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         RemoteProtocol.entries.forEach { p ->
             FilterChip(selected = state.protocol == p, onClick = { state.protocol = p }, label = { Text(p.label) })
@@ -199,41 +207,42 @@ fun RemoteSettingsSection(state: RemoteFormState) {
     }
     if (state.protocol == RemoteProtocol.FTP) {
         Text(
-            "⚠ FTP רגיל שולח את הסיסמה ללא הצפנה. אם השרת תומך – עדיף FTPS או SFTP.",
+            stringResource(R.string.remote_ftp_warning),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
     }
     OutlinedTextField(
         value = state.host, onValueChange = { state.host = it },
-        label = { Text("שרת (host)") }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+        label = { Text(stringResource(R.string.field_host)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
     )
     OutlinedTextField(
         value = state.port, onValueChange = { state.port = it.filter(Char::isDigit) },
-        label = { Text("פורט") }, placeholder = { Text("${state.protocol.defaultPort} (ברירת מחדל)") },
+        label = { Text(stringResource(R.string.field_port)) },
+        placeholder = { Text(stringResource(R.string.port_default_hint, state.protocol.defaultPort)) },
         singleLine = true, modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
     OutlinedTextField(
         value = state.user, onValueChange = { state.user = it },
-        label = { Text("שם משתמש") }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+        label = { Text(stringResource(R.string.field_user)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
     )
     OutlinedTextField(
         value = state.password, onValueChange = { state.password = it },
-        label = { Text("סיסמה") },
-        placeholder = { if (state.hasSavedPassword) Text("•••••• (שמורה – השאר ריק כדי לא לשנות)") },
+        label = { Text(stringResource(R.string.field_password)) },
+        placeholder = { if (state.hasSavedPassword) Text(stringResource(R.string.password_saved_hint)) },
         singleLine = true, modifier = Modifier.fillMaxWidth(),
         visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
-            TextButton(onClick = { showPassword = !showPassword }) { Text(if (showPassword) "הסתר" else "הצג") }
+            TextButton(onClick = { showPassword = !showPassword }) { Text(stringResource(if (showPassword) R.string.hide else R.string.show)) }
         },
-        supportingText = { Text("נשמרת מוצפנת (Android Keystore)") },
+        supportingText = { Text(stringResource(R.string.password_encrypted_note)) },
     )
     OutlinedTextField(
         value = state.remoteDir, onValueChange = { state.remoteDir = it },
-        label = { Text("תיקיית יעד") }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+        label = { Text(stringResource(R.string.field_remote_dir)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
     )
 
@@ -247,14 +256,14 @@ fun RemoteSettingsSection(state: RemoteFormState) {
                     val config = state.currentConfig()
                     val missing = config.missingFields()
                     testResult = if (missing.isNotEmpty()) {
-                        false to "חסר: ${missing.joinToString()}"
+                        false to resources.getString(R.string.test_missing, missing.joinToString { resources.getString(it) })
                     } else {
-                        withContext(Dispatchers.IO) { testConnection(config) }
+                        withContext(Dispatchers.IO) { testConnection(context, config) }
                     }
                     testing = false
                 }
             },
-        ) { Text("בדיקת חיבור") }
+        ) { Text(stringResource(R.string.test_connection)) }
         if (testing) {
             Spacer(Modifier.width(12.dp))
             CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
@@ -269,14 +278,14 @@ fun RemoteSettingsSection(state: RemoteFormState) {
     }
 }
 
-private fun testConnection(config: RemoteConfig): Pair<Boolean, String> = try {
+private fun testConnection(context: Context, config: RemoteConfig): Pair<Boolean, String> = try {
     RemoteUploader.create(config).use { uploader ->
         uploader.connect()
         val created = uploader.ensureDir(config.remoteDir)
-        true to "החיבור הצליח. התיקייה ${config.remoteDir} ${if (created) "נוצרה" else "קיימת"}."
+        true to context.getString(if (created) R.string.test_ok_created else R.string.test_ok_exists, config.remoteDir)
     }
 } catch (e: Exception) {
-    false to (e.message ?: e.describe())
+    false to e.describe(context)
 }
 
 // endregion
@@ -311,7 +320,15 @@ fun rememberScheduleFormState(settings: ActionSettings): ScheduleFormState {
     return state
 }
 
-private val intervalOptions = listOf(15 to "15 דק'", 30 to "30 דק'", 60 to "שעה", 180 to "3 שעות", 360 to "6 שעות", 720 to "12 שעות", 1440 to "יום")
+private val intervalOptions = listOf(
+    15 to R.string.interval_15m,
+    30 to R.string.interval_30m,
+    60 to R.string.interval_1h,
+    180 to R.string.interval_3h,
+    360 to R.string.interval_6h,
+    720 to R.string.interval_12h,
+    1440 to R.string.interval_1d,
+)
 
 @Composable
 fun ScheduleSection(state: ScheduleFormState) {
@@ -324,28 +341,28 @@ fun ScheduleSection(state: ScheduleFormState) {
     }
 
     HorizontalDivider()
-    SectionTitle("הרצה אוטומטית")
-    SwitchRow("הרץ אוטומטית ברקע", state.enabled) {
+    SectionTitle(stringResource(R.string.schedule_section))
+    SwitchRow(stringResource(R.string.schedule_enabled), state.enabled) {
         state.enabled = it
         if (it && state.notifyOnFailure) requestNotificationsIfNeeded()
     }
     if (state.enabled) {
-        Text("כל:", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.schedule_every), style = MaterialTheme.typography.bodyMedium)
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             intervalOptions.forEach { (minutes, label) ->
                 FilterChip(
                     selected = state.intervalMinutes == minutes,
                     onClick = { state.intervalMinutes = minutes },
-                    label = { Text(label) },
+                    label = { Text(stringResource(label)) },
                 )
             }
         }
-        SwitchRow("התראה כשהרצה נכשלת או מצליחה חלקית", state.notifyOnFailure) {
+        SwitchRow(stringResource(R.string.schedule_notify), state.notifyOnFailure) {
             state.notifyOnFailure = it
             if (it) requestNotificationsIfNeeded()
         }
         Text(
-            "ההרצה מתבצעת רק כשיש חיבור לאינטרנט. אנדרואיד עשוי לדחות אותה מעט כדי לחסוך בסוללה – זה לא תזמון מדויק לדקה.",
+            stringResource(R.string.schedule_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

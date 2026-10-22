@@ -5,6 +5,7 @@ import android.content.Context
 import com.crecker.manager.core.run.ActionRunner
 import com.crecker.manager.core.run.Notifications
 import com.crecker.manager.core.run.RunHistory
+import com.crecker.manager.core.settings.AppPreferences
 import com.crecker.manager.core.settings.SettingsStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ class ManagerApp : Application() {
     override fun onCreate() {
         super.onCreate()
         graph = AppGraph(this)
+        graph.appPreferences.applyTheme()
         Notifications.createChannels(this)
     }
 }
@@ -24,6 +26,7 @@ class ManagerApp : Application() {
 /** התלויות המשותפות של האפליקציה (service locator פשוט). */
 class AppGraph(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val appPreferences = AppPreferences(context)
     val settings = SettingsStore(context)
     val history = RunHistory(context)
     val runner = ActionRunner(context, settings, history, appScope)

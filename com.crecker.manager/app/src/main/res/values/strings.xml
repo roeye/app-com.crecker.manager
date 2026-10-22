@@ -1,3 +1,138 @@
 <resources>
-    <string name="app_name">Spartapp Manager</string>
+    <string name="app_name" translatable="false">Spartapp Manager</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="not_found">Not found</string>
+    <string name="settings">Settings</string>
+    <string name="actions_header">Actions</string>
+
+    <!-- App settings -->
+    <string name="setting_theme">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="setting_language">Language</string>
+    <string name="language_auto">Automatic (device language)</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="language_he" translatable="false">עברית</string>
+
+    <!-- Run status / trigger -->
+    <string name="status_running">Running…</string>
+    <string name="status_success">Success</string>
+    <string name="status_partial">Partial success</string>
+    <string name="status_failed">Failed</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="trigger_manual">Manual</string>
+    <string name="trigger_scheduled">Scheduled</string>
+
+    <!-- Runner log -->
+    <string name="log_started">Started (%1$s)</string>
+    <string name="log_cancelled">Action cancelled</string>
+    <string name="log_unexpected_error">Unexpected error: %1$s</string>
+    <string name="log_temp_deleted">Temporary files deleted</string>
+    <string name="log_temp_not_deleted">Could not delete temporary files: %1$s</string>
+    <string name="log_finished">Finished – %1$s</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_run_problems">Scheduled action failures</string>
+
+    <!-- Log view -->
+    <string name="log_title">Log</string>
+    <string name="log_copied">Log copied</string>
+    <string name="log_share_chooser">Share log</string>
+    <string name="copy">Copy</string>
+    <string name="share">Share</string>
+    <string name="log_empty">No runs yet. Tap \"Run\" to start.</string>
+
+    <!-- Action screen / history -->
+    <string name="run_history">Run history</string>
+    <string name="run">Run</string>
+    <string name="history_empty">No saved runs yet.</string>
+    <string name="duration_seconds">%1$.1f s</string>
+    <string name="run_title">Run</string>
+    <string name="run_not_found">Run not found (it may have been deleted – only the last 20 are kept).</string>
+    <string name="last_run_never">Not run yet</string>
+    <string name="last_run">Last run: %1$s · %2$s</string>
+
+    <!-- Remote settings -->
+    <string name="error_invalid_port">Invalid port</string>
+    <string name="error_dir_slash">Target folder must start with /</string>
+    <string name="remote_section">Server connection</string>
+    <string name="remote_ftp_warning">⚠ Plain FTP sends the password unencrypted. If the server supports it, prefer FTPS or SFTP.</string>
+    <string name="field_host">Server (host)</string>
+    <string name="field_port">Port</string>
+    <string name="port_default_hint">%1$d (default)</string>
+    <string name="field_user">Username</string>
+    <string name="field_password">Password</string>
+    <string name="password_saved_hint">•••••• (saved – leave empty to keep it)</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="password_encrypted_note">Stored encrypted (Android Keystore)</string>
+    <string name="field_remote_dir">Target folder</string>
+    <string name="test_connection">Test connection</string>
+    <string name="test_missing">Missing: %1$s</string>
+    <string name="test_ok_created">Connected. Folder %1$s was created.</string>
+    <string name="test_ok_exists">Connected. Folder %1$s exists.</string>
+
+    <!-- Schedule settings -->
+    <string name="schedule_section">Automatic runs</string>
+    <string name="schedule_enabled">Run automatically in the background</string>
+    <string name="schedule_every">Every:</string>
+    <string name="schedule_notify">Notify when a run fails or only partially succeeds</string>
+    <string name="schedule_note">Runs only when there is an internet connection. Android may delay them slightly to save battery – this is not minute-exact scheduling.</string>
+    <string name="interval_15m">15 min</string>
+    <string name="interval_30m">30 min</string>
+    <string name="interval_1h">1 hour</string>
+    <string name="interval_3h">3 hours</string>
+    <string name="interval_6h">6 hours</string>
+    <string name="interval_12h">12 hours</string>
+    <string name="interval_1d">1 day</string>
+
+    <!-- Remote errors -->
+    <string name="remote_err_refused">Server refused the connection (%1$s)</string>
+    <string name="remote_err_login">Login failed – wrong username or password (%1$s)</string>
+    <string name="remote_err_binary">Could not switch to binary mode (%1$s)</string>
+    <string name="remote_err_root">Cannot access the root folder (%1$s)</string>
+    <string name="remote_err_mkdir">Cannot create folder \'%1$s\' (%2$s)</string>
+    <string name="remote_err_cd">Cannot enter folder \'%1$s\' (%2$s)</string>
+    <string name="remote_err_upload">Upload failed (%1$s)</string>
+    <string name="remote_err_rename">Renaming %1$s failed (%2$s)</string>
+    <string name="remote_err_not_connected">Not connected</string>
+    <string name="remote_err_connect">Connection failed (%1$s)</string>
+    <string name="remote_err_dir">Cannot create/access folder %1$s (%2$s)</string>
+
+    <!-- Categories -->
+    <string name="category_sites">Sites</string>
+
+    <!-- paisresults -->
+    <string name="pais_description">Pais lottery results website.</string>
+    <string name="pais_cron_title">Run cron data retrieval</string>
+    <string name="pais_cron_description">Fetches the Pais lottery data (10 files: 5 data files + 5 next-draw time files)</string>
+    <string name="pais_settings_title">Settings – cron data retrieval</string>
+    <string name="pais_only_if_all_valid">Upload files only if all files are valid</string>
+    <string name="pais_only_if_all_valid_hint">Valid = HTTP 200, over 1KB (nextraffle files: over 50 bytes) and expected content</string>
+    <string name="pais_log_missing_settings">Missing connection details in settings (⚙): %1$s</string>
+    <string name="pais_log_step_download">Step 1/2 – downloading %1$d files from pais.co.il</string>
+    <string name="pais_log_all_valid">All %1$d files downloaded and valid</string>
+    <string name="pais_log_some_invalid">%1$d of %2$d files valid, %3$d failed</string>
+    <string name="pais_log_none_valid">No file was downloaded successfully – nothing to upload</string>
+    <string name="pais_log_strict_abort">\"Upload files only if all files are valid\" is checked – no files uploaded</string>
+    <string name="pais_log_skip_invalid">Failed files will not be uploaded – their previous version stays on the server</string>
+    <string name="pais_log_step_upload">Step 2/2 – uploading to %1$s</string>
+    <string name="pais_log_retry">%1$s: %2$s – retrying (%3$d/%4$d)</string>
+    <string name="pais_log_connected">Connected to server</string>
+    <string name="pais_log_dir_created">Folder %1$s did not exist and was created</string>
+    <string name="pais_log_upload_failed">✗ Uploading %1$s failed: %2$s</string>
+    <string name="pais_no_connection">No connection</string>
+    <string name="pais_summary">Summary</string>
+    <string name="pais_col_file">File</string>
+    <string name="pais_col_size">Size</string>
+    <string name="pais_col_download">Download</string>
+    <string name="pais_col_upload">Upload</string>
+    <string name="pais_invalid_http">HTTP %1$d</string>
+    <string name="pais_invalid_small">Too small (%1$d bytes, minimum %2$d)</string>
+    <string name="pais_invalid_marker">Content does not contain \'%1$s\' – probably an error page</string>
 </resources>

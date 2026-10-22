@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.SpartappManager" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- AppCompat theme so AppCompatDelegate can apply per-app language and night mode -->
+    <style name="Theme.SpartappManager" parent="Theme.AppCompat.DayNight.NoActionBar" />
 </resources>

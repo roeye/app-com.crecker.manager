@@ -1,5 +1,6 @@
 package com.crecker.manager.core.remote
 
+import com.crecker.manager.R
 import java.io.Closeable
 import java.io.File
 
@@ -20,11 +21,12 @@ data class RemoteConfig(
 ) {
     val effectivePort get() = port ?: protocol.defaultPort
 
-    fun missingFields(): List<String> = buildList {
-        if (host.isBlank()) add("שרת (host)")
-        if (user.isBlank()) add("שם משתמש")
-        if (password.isEmpty()) add("סיסמה")
-        if (remoteDir.isBlank()) add("תיקיית יעד")
+    /** שדות חובה חסרים (R.string.field_*). */
+    fun missingFields(): List<Int> = buildList {
+        if (host.isBlank()) add(R.string.field_host)
+        if (user.isBlank()) add(R.string.field_user)
+        if (password.isEmpty()) add(R.string.field_password)
+        if (remoteDir.isBlank()) add(R.string.field_remote_dir)
     }
 
     override fun toString() = "${protocol.label} $user@$host:$effectivePort$remoteDir"
@@ -32,7 +34,7 @@ data class RemoteConfig(
 
 /**
  * העלאת קבצים לשרת מרוחק. כל המתודות חוסמות (blocking) – יש לקרוא להן מ-Dispatchers.IO.
- * שגיאות נזרקות כ-IOException עם הודעה קריאה.
+ * שגיאות נזרקות כ-[com.crecker.manager.core.model.LocalizedException].
  */
 interface RemoteUploader : Closeable {
     fun connect()

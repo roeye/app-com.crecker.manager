@@ -7,12 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.crecker.manager.R
 import com.crecker.manager.core.model.ManagedSystem
 import com.crecker.manager.core.model.SystemAction
 import com.crecker.manager.core.ui.LoggedActionScreen
@@ -22,12 +24,14 @@ import com.crecker.manager.graph
 
 /**
  * ניווט:
+ * home → settings (הגדרות האפליקציה)
  * home → system/{systemId} → system/{systemId}/action/{actionId}
  *   ├─ …/settings
  *   └─ …/history → …/history/{runId}
  */
 private object Routes {
     const val HOME = "home"
+    const val APP_SETTINGS = "settings"
     const val SYSTEM = "system/{systemId}"
     const val ACTION = "$SYSTEM/action/{actionId}"
     const val SETTINGS = "$ACTION/settings"
@@ -44,7 +48,13 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
 
     NavHost(navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
-            HomeScreen(onOpenSystem = { navController.navigate(Routes.system(it.id)) })
+            HomeScreen(
+                onOpenSystem = { navController.navigate(Routes.system(it.id)) },
+                onOpenSettings = { navController.navigate(Routes.APP_SETTINGS) },
+            )
+        }
+        composable(Routes.APP_SETTINGS) {
+            AppSettingsScreen(onBack = back)
         }
         composable(Routes.SYSTEM) { entry ->
             WithSystem(entry) { system ->
@@ -106,5 +116,5 @@ private fun WithAction(entry: NavBackStackEntry, content: @Composable (ManagedSy
 
 @Composable
 private fun NotFound() {
-    Text("לא נמצא", Modifier.fillMaxSize().padding(24.dp))
+    Text(stringResource(R.string.not_found), Modifier.fillMaxSize().padding(24.dp))
 }

@@ -38,13 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.crecker.manager.R
 import com.crecker.manager.core.model.RunRecord
 import com.crecker.manager.core.model.RunStatus
 import com.crecker.manager.core.model.SystemAction
 import com.crecker.manager.core.model.actionKey
 import com.crecker.manager.graph
-import java.util.Locale
+
 
 /** ההרצה הנוכחית (חיה) של פעולה, או האחרונה מההיסטוריה אם לא רצה מאז שהאפליקציה עלתה. */
 @Composable
@@ -69,18 +71,19 @@ fun LoggedActionScreen(
     val settings = remember(systemId, action.id) { graph.settings.forAction(systemId, action.id) }
     val run = rememberLatestRun(systemId, action.id)
     val running = run?.status == RunStatus.RUNNING
+    val title = stringResource(action.title)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(action.title, maxLines = 1) },
+                title = { Text(title, maxLines = 1) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "חזרה") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
                 actions = {
-                    IconButton(onClick = onOpenHistory) { Icon(Icons.AutoMirrored.Filled.List, "היסטוריית הרצות") }
+                    IconButton(onClick = onOpenHistory) { Icon(Icons.AutoMirrored.Filled.List, stringResource(R.string.run_history)) }
                     if (action.settingsScreen != null) {
-                        IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, "הגדרות") }
+                        IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, stringResource(R.string.settings)) }
                     }
                 },
             )
@@ -94,7 +97,7 @@ fun LoggedActionScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Card(Modifier.fillMaxWidth()) {
-                Text(action.description, Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(action.description), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
             }
             action.options?.invoke(settings)
 
@@ -107,11 +110,11 @@ fun LoggedActionScreen(
                     if (running) {
                         CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(8.dp))
-                        Text("רץ…")
+                        Text(stringResource(R.string.status_running))
                     } else {
                         Icon(Icons.Default.PlayArrow, null)
                         Spacer(Modifier.width(8.dp))
-                        Text("הרץ")
+                        Text(stringResource(R.string.run))
                     }
                 }
                 if (running) {
@@ -119,15 +122,15 @@ fun LoggedActionScreen(
                     OutlinedButton(onClick = { graph.runner.cancel(systemId, action.id) }) {
                         Icon(Icons.Default.Close, null)
                         Spacer(Modifier.width(4.dp))
-                        Text("ביטול")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             }
 
-            LogHeader(run, action.title)
+            LogHeader(run, title)
             run?.let {
                 Text(
-                    "${formatDateTime(it.startedAt)} · ${it.trigger.label}",
+                    "${formatDateTime(it.startedAt)} · ${stringResource(it.trigger.label)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -152,15 +155,15 @@ fun RunHistoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("היסטוריית הרצות") },
+                title = { Text(stringResource(R.string.run_history)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "חזרה") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
             )
         },
     ) { padding ->
         if (history.isEmpty()) {
-            Text("אין עדיין הרצות שמורות.", Modifier.padding(padding).padding(16.dp))
+            Text(stringResource(R.string.history_empty), Modifier.padding(padding).padding(16.dp))
             return@Scaffold
         }
         LazyColumn(Modifier.padding(padding)) {
@@ -169,10 +172,11 @@ fun RunHistoryScreen(
                     modifier = Modifier.clickable { onOpenRun(record.id) },
                     headlineContent = { Text(formatDateTime(record.startedAt)) },
                     supportingContent = {
-                        val duration = record.endedAt
-                            ?.let { " · %.1f ש'".format(Locale.US, (it - record.startedAt) / 1000.0) }
+                        val seconds = record.endedAt?.let { (it - record.startedAt) / 1000.0 }
+                        val duration = seconds
+                            ?.let { " · " + stringResource(R.string.duration_seconds, it) }
                             .orEmpty()
-                        Text("${record.trigger.label}$duration")
+                        Text(stringResource(record.trigger.label) + duration)
                     },
                     trailingContent = { StatusBadge(record.status) },
                 )
@@ -193,9 +197,9 @@ fun RunDetailScreen(systemId: String, action: SystemAction, runId: String, onBac
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(record?.let { formatDateTime(it.startedAt) } ?: "הרצה") },
+                title = { Text(record?.let { formatDateTime(it.startedAt) } ?: stringResource(R.string.run_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "חזרה") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
             )
         },
@@ -209,10 +213,10 @@ fun RunDetailScreen(systemId: String, action: SystemAction, runId: String, onBac
         ) {
             when {
                 history == null -> CircularProgressIndicator()
-                record == null -> Text("ההרצה לא נמצאה (ייתכן שנמחקה – נשמרות רק 20 האחרונות).")
+                record == null -> Text(stringResource(R.string.run_not_found))
                 else -> {
-                    LogHeader(record, action.title)
-                    Text(record.trigger.label, style = MaterialTheme.typography.bodySmall)
+                    LogHeader(record, stringResource(action.title))
+                    Text(stringResource(record.trigger.label), style = MaterialTheme.typography.bodySmall)
                     LogView(record.entries, Modifier.fillMaxWidth().weight(1f))
                 }
             }
@@ -225,13 +229,13 @@ fun RunDetailScreen(systemId: String, action: SystemAction, runId: String, onBac
 fun LastRunLine(systemId: String, actionId: String) {
     val run = rememberLatestRun(systemId, actionId)
     if (run == null) {
-        Text("לא הורץ עדיין", style = MaterialTheme.typography.bodySmall)
+        Text(stringResource(R.string.last_run_never), style = MaterialTheme.typography.bodySmall)
         return
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text("● ", color = LogColors.of(run.status), style = MaterialTheme.typography.bodySmall)
         Text(
-            "ריצה אחרונה: ${run.status.label} · ${formatDateTime(run.startedAt)}",
+            stringResource(R.string.last_run, stringResource(run.status.label), formatDateTime(run.startedAt)),
             style = MaterialTheme.typography.bodySmall,
         )
     }

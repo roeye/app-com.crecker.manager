@@ -1,5 +1,8 @@
 package com.crecker.manager.systems.paisresults
 
+import androidx.annotation.StringRes
+import com.crecker.manager.R
+
 /**
  * קובץ שמורד מ-pais.co.il ונשמר בשם [name].
  *
@@ -28,11 +31,14 @@ val PAIS_FILES = listOf(
     PaisFile("rssfeed-manui.xml", "https://www.pais.co.il/Subscriber/showMoreResults.aspx", RSS_MIN_BYTES, "lot_results_item"),
 )
 
-/** מחזיר תיאור הבעיה, או null אם התוכן תקין. */
-fun PaisFile.validate(httpCode: Int, bytes: ByteArray): String? = when {
-    httpCode != 200 -> "HTTP $httpCode"
-    bytes.size < minBytes -> "קטן מדי (${bytes.size} בתים, מינימום $minBytes)"
-    !String(bytes, Charsets.UTF_8).contains(marker) -> "התוכן לא מכיל '$marker' – כנראה התקבל דף שגיאה"
+/** בעיית תקינות – הודעה מתורגמת (string res + ארגומנטים). */
+class ValidationProblem(@StringRes val messageRes: Int, vararg val args: Any)
+
+/** מחזיר את הבעיה, או null אם התוכן תקין. */
+fun PaisFile.validate(httpCode: Int, bytes: ByteArray): ValidationProblem? = when {
+    httpCode != 200 -> ValidationProblem(R.string.pais_invalid_http, httpCode)
+    bytes.size < minBytes -> ValidationProblem(R.string.pais_invalid_small, bytes.size, minBytes)
+    !String(bytes, Charsets.UTF_8).contains(marker) -> ValidationProblem(R.string.pais_invalid_marker, marker)
     else -> null
 }
 

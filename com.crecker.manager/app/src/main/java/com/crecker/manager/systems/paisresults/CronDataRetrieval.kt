@@ -16,14 +16,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.crecker.manager.R
 import com.crecker.manager.core.model.ActionContext
 import com.crecker.manager.core.model.RunStatus
 import com.crecker.manager.core.model.SystemAction
+import com.crecker.manager.core.model.describe
 import com.crecker.manager.core.net.HttpFetcher
 import com.crecker.manager.core.remote.RemoteConfig
 import com.crecker.manager.core.remote.RemoteSettings
 import com.crecker.manager.core.remote.RemoteUploader
-import com.crecker.manager.core.run.describe
 import com.crecker.manager.core.settings.ActionSettings
 import com.crecker.manager.core.ui.RemoteSettingsSection
 import com.crecker.manager.core.ui.ScheduleSection
@@ -31,12 +33,12 @@ import com.crecker.manager.core.ui.SettingsScaffold
 import com.crecker.manager.core.ui.rememberRemoteFormState
 import com.crecker.manager.core.ui.rememberScheduleFormState
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import java.io.File
-import kotlinx.coroutines.currentCoroutineContext
 
 /**
  * מוריד את 10 קבצי הפיס, בודק שכל אחד תקין, ומעלה אותם לשרת של האתר.
@@ -52,9 +54,9 @@ object CronDataRetrieval {
 
     val action = SystemAction.Logged(
         id = ID,
-        title = "ביצוע cron data retrieval",
+        title = R.string.pais_cron_title,
         icon = Icons.Default.Refresh,
-        description = "הפעולה מקבלת את המידע של הגרלות הפיס (10 קבצים: 5 קבצי מידע + 5 קבצי זמני הגרלה הבאה)",
+        description = R.string.pais_cron_description,
         schedulable = true,
         options = { settings -> OnlyIfAllValidOption(settings) },
         settingsScreen = { settings, onBack -> CronSettingsScreen(settings, onBack) },
@@ -69,34 +71,34 @@ object CronDataRetrieval {
         val remote = RemoteSettings.load(settings, DEFAULT_REMOTE_DIR)
         val missing = remote.missingFields()
         if (missing.isNotEmpty()) {
-            log.error("חסרים פרטי חיבור בהגדרות (⚙): ${missing.joinToString()}")
+            log.error(getString(R.string.pais_log_missing_settings, missing.joinToString { getString(it) }))
             return RunStatus.FAILED
         }
         val onlyIfAllValid = settings.getBoolean(KEY_ONLY_IF_ALL_VALID, false)
 
         // שלב 1 – הורדה
-        log.info("שלב 1/2 – הורדת ${PAIS_FILES.size} קבצים מ-pais.co.il")
+        log.info(getString(R.string.pais_log_step_download, PAIS_FILES.size))
         val downloads = PAIS_FILES.map { download(it) }
         val valid = downloads.filter { it.ok }
         val invalidCount = downloads.size - valid.size
-        if (invalidCount == 0) log.success("כל ${downloads.size} הקבצים ירדו תקינים")
-        else log.warn("${valid.size} מתוך ${downloads.size} קבצים תקינים, $invalidCount נכשלו")
+        if (invalidCount == 0) log.success(getString(R.string.pais_log_all_valid, downloads.size))
+        else log.warn(getString(R.string.pais_log_some_invalid, valid.size, downloads.size, invalidCount))
 
         val uploadErrors = mutableMapOf<String, String>()
         val uploaded = mutableSetOf<String>()
         val status: RunStatus = when {
             valid.isEmpty() -> {
-                log.error("אף קובץ לא ירד תקין – אין מה להעלות")
+                log.error(getString(R.string.pais_log_none_valid))
                 RunStatus.FAILED
             }
             invalidCount > 0 && onlyIfAllValid -> {
-                log.error("האפשרות \"העלה רק אם כל הקבצים תקינים\" מסומנת – לא מועלה אף קובץ")
+                log.error(getString(R.string.pais_log_strict_abort))
                 RunStatus.FAILED
             }
             else -> {
                 // שלב 2 – העלאה
-                if (invalidCount > 0) log.warn("קבצים שנכשלו לא יועלו – הגרסה הקודמת שלהם נשארת בשרת")
-                log.info("שלב 2/2 – העלאה אל $remote")
+                if (invalidCount > 0) log.warn(getString(R.string.pais_log_skip_invalid))
+                log.info(getString(R.string.pais_log_step_upload, remote.toString()))
                 upload(remote, valid, uploaded, uploadErrors)
                 when {
                     uploaded.size == PAIS_FILES.size -> RunStatus.SUCCESS
@@ -107,8 +109,13 @@ object CronDataRetrieval {
         }
 
         log.table(
-            title = "סיכום",
-            headers = listOf("קובץ", "גודל", "הורדה", "העלאה"),
+            title = getString(R.string.pais_summary),
+            headers = listOf(
+                getString(R.string.pais_col_file),
+                getString(R.string.pais_col_size),
+                getString(R.string.pais_col_download),
+                getString(R.string.pais_col_upload),
+            ),
             rows = downloads.map { d ->
                 listOf(
                     d.file.name,
@@ -140,14 +147,14 @@ object CronDataRetrieval {
                     log.success("↓ ${file.name} – ${formatSize(result.bytes.size)}")
                     return Download(file, result.bytes.size, null)
                 }
-                lastError = problem
+                lastError = getString(problem.messageRes, *problem.args)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                lastError = e.describe()
+                lastError = e.describe(appContext)
             }
             if (attempt < MAX_ATTEMPTS) {
-                log.warn("${file.name}: $lastError – ניסיון חוזר (${attempt + 1}/$MAX_ATTEMPTS)")
+                log.warn(getString(R.string.pais_log_retry, file.name, lastError, attempt + 1, MAX_ATTEMPTS))
                 delay(RETRY_DELAY_MS)
             } else {
                 log.error("✗ ${file.name}: $lastError")
@@ -166,9 +173,9 @@ object CronDataRetrieval {
         try {
             RemoteUploader.create(remote).use { uploader ->
                 runInterruptible { uploader.connect() }
-                log.success("מחובר לשרת")
+                log.success(getString(R.string.pais_log_connected))
                 val created = runInterruptible { uploader.ensureDir(remote.remoteDir) }
-                if (created) log.info("התיקייה ${remote.remoteDir} לא הייתה קיימת ונוצרה")
+                if (created) log.info(getString(R.string.pais_log_dir_created, remote.remoteDir))
                 for (d in files) {
                     currentCoroutineContext().ensureActive()
                     try {
@@ -178,9 +185,9 @@ object CronDataRetrieval {
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
-                        val message = e.message ?: e.describe()
+                        val message = e.describe(appContext)
                         errors[d.file.name] = message
-                        log.error("✗ העלאת ${d.file.name} נכשלה: $message")
+                        log.error(getString(R.string.pais_log_upload_failed, d.file.name, message))
                     }
                 }
             }
@@ -188,9 +195,9 @@ object CronDataRetrieval {
             throw e
         } catch (e: Exception) {
             // כשל בחיבור / בתיקייה – אף קובץ שנותר לא הועלה
-            val message = e.message ?: e.describe()
-            log.error("✗ $message")
-            files.filter { it.file.name !in uploaded }.forEach { errors[it.file.name] = "אין חיבור" }
+            log.error("✗ ${e.describe(appContext)}")
+            val noConnection = getString(R.string.pais_no_connection)
+            files.filter { it.file.name !in uploaded }.forEach { errors[it.file.name] = noConnection }
         }
     }
 }
@@ -206,9 +213,9 @@ private fun OnlyIfAllValidOption(settings: ActionSettings) {
             onCheckedChange = { scope.launch { settings.putBoolean(CronDataRetrieval.KEY_ONLY_IF_ALL_VALID, it) } },
         )
         Column {
-            Text("העלה קבצים רק אם כל הקבצים תקינים")
+            Text(stringResource(R.string.pais_only_if_all_valid))
             Text(
-                "תקין = HTTP 200, מעל 1KB (קבצי nextraffle: מעל 50 בתים) ותוכן צפוי",
+                stringResource(R.string.pais_only_if_all_valid_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -222,7 +229,7 @@ private fun CronSettingsScreen(settings: ActionSettings, onBack: () -> Unit) {
     val remote = rememberRemoteFormState(settings, CronDataRetrieval.DEFAULT_REMOTE_DIR)
     val schedule = rememberScheduleFormState(settings)
     SettingsScaffold(
-        title = "הגדרות – cron data retrieval",
+        title = stringResource(R.string.pais_settings_title),
         loaded = remote.loaded && schedule.loaded,
         onBack = onBack,
         onSave = {

@@ -3,7 +3,6 @@ package com.crecker.manager
 import com.crecker.manager.systems.paisresults.PAIS_FILES
 import com.crecker.manager.systems.paisresults.validate
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 
@@ -37,14 +36,14 @@ class PaisFilesTest {
     }
 
     @Test
-    fun rejectsHttpError() = assertNotNull(rss.validate(500, ByteArray(5000)))
+    fun rejectsHttpError() = assertEquals(R.string.pais_invalid_http, rss.validate(500, ByteArray(5000))?.messageRes)
 
     @Test
-    fun rejectsSmallFile() = assertNotNull(rss.validate(200, "<item>".toByteArray()))
+    fun rejectsSmallFile() = assertEquals(R.string.pais_invalid_small, rss.validate(200, "<item>".toByteArray())?.messageRes)
 
     @Test
     fun rejectsErrorPage() {
         val body = "<html><body>Access denied</body></html>".padEnd(5000)
-        assertNotNull(rss.validate(200, body.toByteArray()))
+        assertEquals(R.string.pais_invalid_marker, rss.validate(200, body.toByteArray())?.messageRes)
     }
 }

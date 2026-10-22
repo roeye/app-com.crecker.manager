@@ -1,6 +1,7 @@
 package com.crecker.manager.core.run
 
 import android.content.Context
+import com.crecker.manager.R
 import com.crecker.manager.core.model.ActionContext
 import com.crecker.manager.core.model.ActionLog
 import com.crecker.manager.core.model.LogEntry
@@ -11,6 +12,8 @@ import com.crecker.manager.core.model.RunStatus
 import com.crecker.manager.core.model.RunTrigger
 import com.crecker.manager.core.model.SystemAction
 import com.crecker.manager.core.model.actionKey
+import com.crecker.manager.core.model.describe
+import com.crecker.manager.core.settings.localized
 import com.crecker.manager.core.settings.SettingsStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -72,23 +75,24 @@ class ActionRunner(
         }
         val log = LiveLog(key)
         val workDir = File(appContext.cacheDir, "runs/$runId").apply { mkdirs() }
-        val context = ActionContext(appContext, settingsStore.forAction(systemId, action.id), workDir, log, trigger)
+        val res = appContext.localized()
+        val context = ActionContext(res, settingsStore.forAction(systemId, action.id), workDir, log, trigger)
 
         var status = RunStatus.FAILED
         try {
-            log.info("התחלה (${trigger.label})")
+            log.info(res.getString(R.string.log_started, res.getString(trigger.label)))
             status = withContext(Dispatchers.IO) { action.run(context) }
         } catch (e: CancellationException) {
             status = RunStatus.CANCELLED
-            log.warn("הפעולה בוטלה")
+            log.warn(res.getString(R.string.log_cancelled))
             throw e
         } catch (e: Exception) {
-            log.error("שגיאה לא צפויה: ${e.describe()}")
+            log.error(res.getString(R.string.log_unexpected_error, e.describe(res)))
         } finally {
             withContext(NonCancellable) {
-                if (workDir.deleteRecursively()) log.info("קבצים זמניים נמחקו")
-                else log.warn("לא ניתן היה למחוק את הקבצים הזמניים: ${workDir.path}")
-                log.add(if (status == RunStatus.SUCCESS) LogLevel.SUCCESS else LogLevel.INFO, "סיום – ${status.label}")
+                if (workDir.deleteRecursively()) log.info(res.getString(R.string.log_temp_deleted))
+                else log.warn(res.getString(R.string.log_temp_not_deleted, workDir.path))
+                log.add(if (status == RunStatus.SUCCESS) LogLevel.SUCCESS else LogLevel.INFO, res.getString(R.string.log_finished, res.getString(status.label)))
                 _runs.update { it + (key to it.getValue(key).copy(status = status, endedAt = System.currentTimeMillis())) }
                 history.save(_runs.value.getValue(key))
                 synchronized(jobs) { jobs.remove(key) }
@@ -112,8 +116,3 @@ class ActionRunner(
     }
 }
 
-/** תיאור קצר וקריא של חריגה ללוג. */
-fun Throwable.describe(): String = buildString {
-    append(this@describe.javaClass.simpleName)
-    message?.takeIf { it.isNotBlank() }?.let { append(": ").append(it.trim()) }
-}

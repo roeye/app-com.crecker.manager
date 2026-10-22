@@ -1,12 +1,13 @@
 package com.crecker.manager.core.remote
 
+import com.crecker.manager.R
+import com.crecker.manager.core.model.LocalizedException
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import com.jcraft.jsch.Session
 import com.jcraft.jsch.SftpException
 import java.io.File
-import java.io.IOException
 
 /**
  * SFTP (מעל SSH) דרך JSch.
@@ -16,18 +17,18 @@ internal class SftpUploader(private val config: RemoteConfig) : RemoteUploader {
     private var session: Session? = null
     private var channel: ChannelSftp? = null
 
-    private val sftp get() = channel ?: throw IOException("לא מחובר")
+    private val sftp get() = channel ?: throw LocalizedException(R.string.remote_err_not_connected)
 
     override fun connect() {
         try {
             val s = JSch().getSession(config.user, config.host, config.effectivePort)
-            s.setPassword(config.password)
+            s.setPassword(config.password.toByteArray(Charsets.UTF_8))
             s.setConfig("StrictHostKeyChecking", "no")
             s.connect(TIMEOUT_MS)
             session = s
             channel = (s.openChannel("sftp") as ChannelSftp).apply { connect(TIMEOUT_MS) }
         } catch (e: JSchException) {
-            throw IOException("ההתחברות נכשלה (${e.message})", e)
+            throw LocalizedException(R.string.remote_err_connect, e.message.orEmpty(), cause = e)
         }
     }
 
@@ -51,7 +52,7 @@ internal class SftpUploader(private val config: RemoteConfig) : RemoteUploader {
             }
             return created
         } catch (e: SftpException) {
-            throw IOException("לא ניתן ליצור/לגשת לתיקייה $path (${e.message})", e)
+            throw LocalizedException(R.string.remote_err_dir, path, e.message.orEmpty(), cause = e)
         }
     }
 
@@ -68,7 +69,7 @@ internal class SftpUploader(private val config: RemoteConfig) : RemoteUploader {
             }
         } catch (e: SftpException) {
             runCatching { sftp.rm(temp) }
-            throw IOException("ההעלאה נכשלה (${e.message})", e)
+            throw LocalizedException(R.string.remote_err_upload, e.message.orEmpty(), cause = e)
         }
     }
 

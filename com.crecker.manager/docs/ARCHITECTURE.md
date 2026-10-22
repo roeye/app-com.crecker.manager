@@ -7,6 +7,7 @@
 
 ```
 מסך בית (מערכות לפי קטגוריה)  →  מסך מערכת (רשימת פעולות)  →  מסך פעולה
+   └─ ⚙ הגדרות האפליקציה                                      
                                                                  ├─ ⚙ הגדרות
                                                                  └─ ☰ היסטוריית הרצות → הרצה
 ```
@@ -15,16 +16,18 @@
 
 ```
 com.crecker.manager/
-├── ManagerApp.kt          Application + AppGraph (settings, history, runner)
-├── MainActivity.kt        Theme + RTL + AppNavHost
+├── ManagerApp.kt          Application + AppGraph (appPreferences, settings, history, runner)
+├── MainActivity.kt        AppCompatActivity + Theme + AppNavHost
 ├── app/                   ה-host
 │   ├── SystemRegistry.kt  רשימת כל המערכות
 │   ├── HomeScreens.kt     מסך בית + מסך מערכת
+│   ├── AppSettingsScreen.kt  הגדרות האפליקציה (מצב תצוגה, שפה)
 │   └── AppNavHost.kt      ניווט
 ├── core/                  תשתית משותפת – לא תלויה באף מערכת
 │   ├── model/             ManagedSystem, SystemAction, RunModels (לוג, סטטוס, ActionContext)
 │   ├── run/               ActionRunner, RunHistory, ActionScheduler (+Worker), Notifications
-│   ├── settings/          SettingsStore/ActionSettings (DataStore), SecretCipher (Keystore)
+│   ├── settings/          SettingsStore/ActionSettings (DataStore), SecretCipher (Keystore),
+│   │                      AppPreferences / ThemeMode / AppLanguage, Context.localized()
 │   ├── net/               HttpFetcher
 │   ├── remote/            RemoteUploader: FTP / FTPS / SFTP
 │   └── ui/                LoggedActionScreen, LogView, טפסי הגדרות (חיבור מרוחק, תזמון)
@@ -35,9 +38,10 @@ com.crecker.manager/
 ## מושגים
 
 ### `ManagedSystem`
-מערכת: `id` (יציב), `name`, `category` (לקיבוץ במסך הבית), `icon`, `actions`, ו-`StatusLine()` אופציונלי לשורת סטטוס במסך הבית.
+מערכת: `id` (יציב), `name` (שם פרטי, לא מתורגם), `description` ו-`category` (`@StringRes`), `icon`, `actions`, ו-`StatusLine()` אופציונלי לשורת סטטוס במסך הבית.
 
 ### `SystemAction`
+- `title` (ו-`description` ב-`Logged`) הם `@StringRes`.
 - **`Logged`**: הסוג העיקרי. המסך גנרי (הסבר, כפתור הרצה/ביטול, לוג חי, היסטוריה, העתקה/שיתוף). הפעולה כותבת רק `run: suspend ActionContext.() -> RunStatus`.
   - `options`: UI מעל כפתור ההרצה (למשל צ'קבוקס).
   - `settingsScreen`: מסך ההגדרות של הפעולה (כפתור ⚙).
@@ -80,7 +84,7 @@ JSON תחת `files/run-history/<system>__<action>/`. נשמרות 20 הרצות 
 
 1. יוצרים תיקייה `systems/<name>/`.
 2. יוצרים `object MySystem : ManagedSystem` עם `id` יציב, שם, קטגוריה ואייקון.
-3. מוסיפים את הפעולות (ראו למטה).
+3. מוסיפים את הפעולות (ראו למטה). כל הטקסטים נכנסים ל-`values/strings.xml` ול-`values-iw/strings.xml` עם prefix של המערכת (למשל `pais_`).
 4. מוסיפים `MySystem` ל-`SystemRegistry.systems`.
 5. מתעדים ב-`docs/systems/<name>.md` ומוסיפים שורה לטבלה ב-`README.md`.
 
@@ -92,13 +96,13 @@ object MyAction {
 
     val action = SystemAction.Logged(
         id = ID,
-        title = "שם הפעולה",
+        title = R.string.my_action_title,
         icon = Icons.Default.Build,
-        description = "מה הפעולה עושה",
+        description = R.string.my_action_description,
         settingsScreen = { settings, onBack -> MySettingsScreen(settings, onBack) }, // אופציונלי
         schedulable = true,                                                         // אופציונלי
         run = {
-            log.info("מתחיל…")
+            log.info(getString(R.string.my_action_started))
             // ... לוגיקה; קבצים זמניים ב-workDir
             RunStatus.SUCCESS
         },
@@ -124,4 +128,24 @@ SettingsScaffold(title, loaded = remote.loaded && schedule.loaded, onBack,
 
 - **`id` של מערכת ושל פעולה לא משתנים** אחרי שיש נתונים שמורים, כי ההגדרות וההיסטוריה מקושרות אליהם.
 - `core/` לא מכיר אף מערכת (חוץ מ-`ScheduledActionWorker` שמחפש ב-`SystemRegistry`).
-- טקסט UI ולוג בעברית.
+- כל טקסט שמוצג למשתמש נמצא ב-string resources, באנגלית ובעברית (ראו "שפות").
+
+## הגדרות האפליקציה
+
+מסך ⚙ במסך הבית (`AppSettingsScreen`). כל הגדרה פותחת דיאלוג בחירה, והבחירה מוחלת מיד.
+
+- **מצב תצוגה** (`ThemeMode`: לפי המכשיר / בהיר / כהה). נשמר ב-`AppPreferences` (SharedPreferences, כי צריך לקרוא אותו באופן סינכרוני ב-`Application.onCreate`) ומוחל עם `AppCompatDelegate.setDefaultNightMode`.
+- **שפה** (`AppLanguage`: אוטומטי / English / עברית). משתמש ב-per-app language של אנדרואיד דרך `AppCompatDelegate.setApplicationLocales`. ב-Android 13 ומעלה המערכת שומרת את הבחירה (והיא מופיעה גם בהגדרות המכשיר, דרך `res/xml/locales_config.xml`). בגרסאות קודמות AppCompat שומר אותה (`autoStoreLocales` במניפסט).
+
+שתי ההגדרות יוצרות מחדש את ה-Activity, ולכן כל המסכים מתעדכנים.
+
+## שפות
+
+- `res/values/strings.xml`: אנגלית (ברירת מחדל, גם לכל שפה אחרת של המכשיר).
+- `res/values-iw/strings.xml`: עברית (`iw` הוא קוד המשאבים של עברית באנדרואיד).
+- כיוון התצוגה (RTL/LTR) נקבע לפי השפה, בלי לכפות כיוון.
+- **בקוד Compose:** `stringResource(R.string.x)`.
+- **בפעולה:** `getString(R.string.x, args)` של `ActionContext`, שהוא Context בשפת האפליקציה.
+- **מחוץ ל-UI** (Worker, התראות): `context.localized()`. ב-Android 12 ומטה ה-Application context לא מתעדכן לבד לשפה שנבחרה.
+- **בקוד בלי Context** (uploaders, ולידציה): זורקים `LocalizedException(R.string.x, args)` או מחזירים string res, ומתרגמים ב-`describe(context)`.
+- **הלוג נשמר כטקסט**, בשפה שהייתה פעילה בזמן ההרצה. הרצות ישנות לא מתורגמות אחרי החלפת שפה.

@@ -1,0 +1,134 @@
+<resources>
+    <!-- Common -->
+    <string name="back">חזרה</string>
+    <string name="save">שמירה</string>
+    <string name="cancel">ביטול</string>
+    <string name="not_found">לא נמצא</string>
+    <string name="settings">הגדרות</string>
+    <string name="actions_header">פעולות</string>
+
+    <!-- App settings -->
+    <string name="setting_theme">מצב תצוגה</string>
+    <string name="theme_system">לפי המכשיר</string>
+    <string name="theme_light">בהיר</string>
+    <string name="theme_dark">כהה</string>
+    <string name="setting_language">שפה</string>
+    <string name="language_auto">אוטומטי (שפת המכשיר)</string>
+
+    <!-- Run status / trigger -->
+    <string name="status_running">רץ…</string>
+    <string name="status_success">הצלחה</string>
+    <string name="status_partial">הצלחה חלקית</string>
+    <string name="status_failed">נכשל</string>
+    <string name="status_cancelled">בוטל</string>
+    <string name="trigger_manual">ידני</string>
+    <string name="trigger_scheduled">מתוזמן</string>
+
+    <!-- Runner log -->
+    <string name="log_started">התחלה (%1$s)</string>
+    <string name="log_cancelled">הפעולה בוטלה</string>
+    <string name="log_unexpected_error">שגיאה לא צפויה: %1$s</string>
+    <string name="log_temp_deleted">קבצים זמניים נמחקו</string>
+    <string name="log_temp_not_deleted">לא ניתן היה למחוק את הקבצים הזמניים: %1$s</string>
+    <string name="log_finished">סיום – %1$s</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_run_problems">כשלים בפעולות מתוזמנות</string>
+
+    <!-- Log view -->
+    <string name="log_title">לוג</string>
+    <string name="log_copied">הלוג הועתק</string>
+    <string name="log_share_chooser">שיתוף לוג</string>
+    <string name="copy">העתק</string>
+    <string name="share">שיתוף</string>
+    <string name="log_empty">עדיין אין הרצות. לחץ על \"הרץ\" כדי להתחיל.</string>
+
+    <!-- Action screen / history -->
+    <string name="run_history">היסטוריית הרצות</string>
+    <string name="run">הרץ</string>
+    <string name="history_empty">אין עדיין הרצות שמורות.</string>
+    <string name="duration_seconds">%1$.1f ש\'</string>
+    <string name="run_title">הרצה</string>
+    <string name="run_not_found">ההרצה לא נמצאה (ייתכן שנמחקה – נשמרות רק 20 האחרונות).</string>
+    <string name="last_run_never">לא הורץ עדיין</string>
+    <string name="last_run">ריצה אחרונה: %1$s · %2$s</string>
+
+    <!-- Remote settings -->
+    <string name="error_invalid_port">פורט לא תקין</string>
+    <string name="error_dir_slash">תיקיית היעד צריכה להתחיל ב-/</string>
+    <string name="remote_section">חיבור לשרת</string>
+    <string name="remote_ftp_warning">⚠ FTP רגיל שולח את הסיסמה ללא הצפנה. אם השרת תומך – עדיף FTPS או SFTP.</string>
+    <string name="field_host">שרת (host)</string>
+    <string name="field_port">פורט</string>
+    <string name="port_default_hint">%1$d (ברירת מחדל)</string>
+    <string name="field_user">שם משתמש</string>
+    <string name="field_password">סיסמה</string>
+    <string name="password_saved_hint">•••••• (שמורה – השאר ריק כדי לא לשנות)</string>
+    <string name="show">הצג</string>
+    <string name="hide">הסתר</string>
+    <string name="password_encrypted_note">נשמרת מוצפנת (Android Keystore)</string>
+    <string name="field_remote_dir">תיקיית יעד</string>
+    <string name="test_connection">בדיקת חיבור</string>
+    <string name="test_missing">חסר: %1$s</string>
+    <string name="test_ok_created">החיבור הצליח. התיקייה %1$s נוצרה.</string>
+    <string name="test_ok_exists">החיבור הצליח. התיקייה %1$s קיימת.</string>
+
+    <!-- Schedule settings -->
+    <string name="schedule_section">הרצה אוטומטית</string>
+    <string name="schedule_enabled">הרץ אוטומטית ברקע</string>
+    <string name="schedule_every">כל:</string>
+    <string name="schedule_notify">התראה כשהרצה נכשלת או מצליחה חלקית</string>
+    <string name="schedule_note">ההרצה מתבצעת רק כשיש חיבור לאינטרנט. אנדרואיד עשוי לדחות אותה מעט כדי לחסוך בסוללה – זה לא תזמון מדויק לדקה.</string>
+    <string name="interval_15m">15 דק\'</string>
+    <string name="interval_30m">30 דק\'</string>
+    <string name="interval_1h">שעה</string>
+    <string name="interval_3h">3 שעות</string>
+    <string name="interval_6h">6 שעות</string>
+    <string name="interval_12h">12 שעות</string>
+    <string name="interval_1d">יום</string>
+
+    <!-- Remote errors -->
+    <string name="remote_err_refused">השרת דחה את החיבור (%1$s)</string>
+    <string name="remote_err_login">ההתחברות נכשלה – שם משתמש או סיסמה שגויים (%1$s)</string>
+    <string name="remote_err_binary">לא ניתן לעבור למצב בינארי (%1$s)</string>
+    <string name="remote_err_root">לא ניתן לגשת לתיקיית השורש (%1$s)</string>
+    <string name="remote_err_mkdir">לא ניתן ליצור את התיקייה \'%1$s\' (%2$s)</string>
+    <string name="remote_err_cd">לא ניתן להיכנס לתיקייה \'%1$s\' (%2$s)</string>
+    <string name="remote_err_upload">ההעלאה נכשלה (%1$s)</string>
+    <string name="remote_err_rename">שינוי השם של %1$s נכשל (%2$s)</string>
+    <string name="remote_err_not_connected">לא מחובר</string>
+    <string name="remote_err_connect">ההתחברות נכשלה (%1$s)</string>
+    <string name="remote_err_dir">לא ניתן ליצור/לגשת לתיקייה %1$s (%2$s)</string>
+
+    <!-- Categories -->
+    <string name="category_sites">אתרים</string>
+
+    <!-- paisresults -->
+    <string name="pais_description">אתר תוצאות הגרלות מפעל הפיס.</string>
+    <string name="pais_cron_title">ביצוע cron data retrieval</string>
+    <string name="pais_cron_description">הפעולה מקבלת את המידע של הגרלות הפיס (10 קבצים: 5 קבצי מידע + 5 קבצי זמני הגרלה הבאה)</string>
+    <string name="pais_settings_title">הגדרות – cron data retrieval</string>
+    <string name="pais_only_if_all_valid">העלה קבצים רק אם כל הקבצים תקינים</string>
+    <string name="pais_only_if_all_valid_hint">תקין = HTTP 200, מעל 1KB (קבצי nextraffle: מעל 50 בתים) ותוכן צפוי</string>
+    <string name="pais_log_missing_settings">חסרים פרטי חיבור בהגדרות (⚙): %1$s</string>
+    <string name="pais_log_step_download">שלב 1/2 – הורדת %1$d קבצים מ-pais.co.il</string>
+    <string name="pais_log_all_valid">כל %1$d הקבצים ירדו תקינים</string>
+    <string name="pais_log_some_invalid">%1$d מתוך %2$d קבצים תקינים, %3$d נכשלו</string>
+    <string name="pais_log_none_valid">אף קובץ לא ירד תקין – אין מה להעלות</string>
+    <string name="pais_log_strict_abort">האפשרות \"העלה קבצים רק אם כל הקבצים תקינים\" מסומנת – לא מועלה אף קובץ</string>
+    <string name="pais_log_skip_invalid">קבצים שנכשלו לא יועלו – הגרסה הקודמת שלהם נשארת בשרת</string>
+    <string name="pais_log_step_upload">שלב 2/2 – העלאה אל %1$s</string>
+    <string name="pais_log_retry">%1$s: %2$s – ניסיון חוזר (%3$d/%4$d)</string>
+    <string name="pais_log_connected">מחובר לשרת</string>
+    <string name="pais_log_dir_created">התיקייה %1$s לא הייתה קיימת ונוצרה</string>
+    <string name="pais_log_upload_failed">✗ העלאת %1$s נכשלה: %2$s</string>
+    <string name="pais_no_connection">אין חיבור</string>
+    <string name="pais_summary">סיכום</string>
+    <string name="pais_col_file">קובץ</string>
+    <string name="pais_col_size">גודל</string>
+    <string name="pais_col_download">הורדה</string>
+    <string name="pais_col_upload">העלאה</string>
+    <string name="pais_invalid_http">HTTP %1$d</string>
+    <string name="pais_invalid_small">קטן מדי (%1$d בתים, מינימום %2$d)</string>
+    <string name="pais_invalid_marker">התוכן לא מכיל \'%1$s\' – כנראה התקבל דף שגיאה</string>
+</resources>

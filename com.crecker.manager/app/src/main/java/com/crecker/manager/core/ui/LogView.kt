@@ -35,9 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.crecker.manager.R
 import com.crecker.manager.core.model.LogEntry
 import com.crecker.manager.core.model.LogLevel
 import com.crecker.manager.core.model.RunRecord
@@ -81,9 +83,9 @@ fun formatTime(millis: Long): String = timeFormat.format(Date(millis))
 fun formatDateTime(millis: Long): String = dateTimeFormat.format(Date(millis))
 
 /** הלוג כטקסט – להעתקה ושיתוף. */
-fun RunRecord.toShareText(title: String): String = buildString {
+fun RunRecord.toShareText(context: Context, title: String): String = buildString {
     appendLine(title)
-    appendLine("${formatDateTime(startedAt)} · ${trigger.label} · ${status.label}")
+    appendLine("${formatDateTime(startedAt)} · ${context.getString(trigger.label)} · ${context.getString(status.label)}")
     appendLine()
     entries.forEach { entry ->
         appendLine("[${formatTime(entry.time)}] ${entry.message}")
@@ -96,7 +98,7 @@ fun RunRecord.toShareText(title: String): String = buildString {
 
 fun copyToClipboard(context: Context, label: String, text: String) {
     context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(label, text))
-    Toast.makeText(context, "הלוג הועתק", Toast.LENGTH_SHORT).show()
+    Toast.makeText(context, context.getString(R.string.log_copied), Toast.LENGTH_SHORT).show()
 }
 
 fun shareText(context: Context, subject: String, text: String) {
@@ -104,7 +106,7 @@ fun shareText(context: Context, subject: String, text: String) {
         .setType("text/plain")
         .putExtra(Intent.EXTRA_SUBJECT, subject)
         .putExtra(Intent.EXTRA_TEXT, text)
-    context.startActivity(Intent.createChooser(intent, "שיתוף לוג"))
+    context.startActivity(Intent.createChooser(intent, context.getString(R.string.log_share_chooser)))
 }
 
 /** כותרת הלוג עם סטטוס + העתקה/שיתוף. */
@@ -112,13 +114,15 @@ fun shareText(context: Context, subject: String, text: String) {
 fun LogHeader(record: RunRecord?, title: String) {
     val context = LocalContext.current
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text("לוג", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        Text(stringResource(R.string.log_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
         if (record != null) {
             StatusBadge(record.status)
             if (record.status != RunStatus.RUNNING) {
-                TextButton(onClick = { copyToClipboard(context, title, record.toShareText(title)) }) { Text("העתק") }
-                IconButton(onClick = { shareText(context, title, record.toShareText(title)) }) {
-                    Icon(Icons.Default.Share, "שיתוף")
+                TextButton(onClick = { copyToClipboard(context, title, record.toShareText(context, title)) }) {
+                    Text(stringResource(R.string.copy))
+                }
+                IconButton(onClick = { shareText(context, title, record.toShareText(context, title)) }) {
+                    Icon(Icons.Default.Share, stringResource(R.string.share))
                 }
             }
         }
@@ -130,7 +134,7 @@ fun StatusBadge(status: RunStatus) {
     val color = LogColors.of(status)
     Surface(color = color.copy(alpha = 0.15f), shape = RoundedCornerShape(50)) {
         Text(
-            status.label,
+            stringResource(status.label),
             color = color,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
@@ -153,7 +157,7 @@ fun LogView(entries: List<LogEntry>, modifier: Modifier = Modifier) {
     ) {
         if (entries.isEmpty()) {
             Text(
-                "עדיין אין הרצות. לחץ על \"הרץ\" כדי להתחיל.",
+                stringResource(R.string.log_empty),
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

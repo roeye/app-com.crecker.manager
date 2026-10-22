@@ -1,5 +1,6 @@
 package com.crecker.manager.core.model
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.crecker.manager.core.settings.ActionSettings
@@ -7,7 +8,8 @@ import com.crecker.manager.core.settings.ActionSettings
 sealed interface SystemAction {
     /** מזהה יציב בתוך המערכת – משמש בניווט, בהגדרות ובהיסטוריה. */
     val id: String
-    val title: String
+    @get:StringRes
+    val title: Int
     val icon: ImageVector
 
     /**
@@ -16,9 +18,9 @@ sealed interface SystemAction {
      */
     class Logged(
         override val id: String,
-        override val title: String,
+        @StringRes override val title: Int,
         override val icon: ImageVector,
-        val description: String,
+        @StringRes val description: Int,
         /** האם אפשר להריץ את הפעולה אוטומטית ברקע (WorkManager). */
         val schedulable: Boolean = false,
         /** אפשרויות שמוצגות מעל כפתור ההרצה (למשל צ'קבוקסים). */
@@ -31,7 +33,7 @@ sealed interface SystemAction {
     /** פעולה עם מסך מותאם לחלוטין. */
     class Custom(
         override val id: String,
-        override val title: String,
+        @StringRes override val title: Int,
         override val icon: ImageVector,
         val screen: @Composable (settings: ActionSettings, onBack: () -> Unit) -> Unit,
     ) : SystemAction

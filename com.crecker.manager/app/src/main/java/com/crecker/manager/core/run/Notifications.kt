@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -15,6 +16,7 @@ import com.crecker.manager.MainActivity
 import com.crecker.manager.R
 import com.crecker.manager.core.model.LogLevel
 import com.crecker.manager.core.model.RunRecord
+import com.crecker.manager.core.settings.localized
 
 object Notifications {
     private const val CHANNEL_RUN_PROBLEMS = "run_problems"
@@ -22,7 +24,7 @@ object Notifications {
     fun createChannels(context: Context) {
         val channel = NotificationChannel(
             CHANNEL_RUN_PROBLEMS,
-            "כשלים בפעולות מתוזמנות",
+            context.localized().getString(R.string.notif_channel_run_problems),
             NotificationManager.IMPORTANCE_DEFAULT,
         )
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
@@ -32,8 +34,10 @@ object Notifications {
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
-    fun runProblem(context: Context, systemName: String, actionTitle: String, record: RunRecord) {
+    fun runProblem(context: Context, systemName: String, @StringRes actionTitleRes: Int, record: RunRecord) {
         if (!canNotify(context)) return
+        val res = context.localized()
+        val actionTitle = res.getString(actionTitleRes)
         val firstError = record.entries.firstOrNull { it.level == LogLevel.ERROR }?.message
         val openApp = PendingIntent.getActivity(
             context, 0,
@@ -42,7 +46,7 @@ object Notifications {
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_RUN_PROBLEMS)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("$systemName – ${record.status.label}")
+            .setContentTitle("$systemName – ${res.getString(record.status.label)}")
             .setContentText(firstError ?: actionTitle)
             .setStyle(NotificationCompat.BigTextStyle().bigText(listOfNotNull(actionTitle, firstError).joinToString("\n")))
             .setContentIntent(openApp)
