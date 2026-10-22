@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar icon: the launcher tiles, cropped to 24dp and single color -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+    <group
+        android:translateX="-32"
+        android:translateY="-32">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M39,34h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M61,34h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M39,56h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M61,56h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z M62.5,60.2L62.5,69.8a1,1 0,0 0,1.5 0.87L71.3,65.87a1,1 0,0 0,0 -1.74L64,59.33a1,1 0,0 0,-1.5 0.87z" />
+    </group>
+</vector>

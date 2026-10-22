@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed icon (Android 13+): same tiles as one color; the play mark is cut out of the accent tile -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M39,34h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z" />
+    <path
+        android:fillAlpha="0.7"
+        android:fillColor="#FF000000"
+        android:pathData="M61,34h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z" />
+    <path
+        android:fillAlpha="0.7"
+        android:fillColor="#FF000000"
+        android:pathData="M39,56h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z" />
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M61,56h8a5,5 0,0 1,5 5v8a5,5 0,0 1,-5 5h-8a5,5 0,0 1,-5 -5v-8a5,5 0,0 1,5 -5z M62.5,60.2L62.5,69.8a1,1 0,0 0,1.5 0.87L71.3,65.87a1,1 0,0 0,0 -1.74L64,59.33a1,1 0,0 0,-1.5 0.87z" />
+</vector>

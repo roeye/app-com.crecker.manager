@@ -45,7 +45,7 @@ object Notifications {
             PendingIntent.FLAG_IMMUTABLE,
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_RUN_PROBLEMS)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("$systemName – ${res.getString(record.status.label)}")
             .setContentText(firstError ?: actionTitle)
             .setStyle(NotificationCompat.BigTextStyle().bigText(listOfNotNull(actionTitle, firstError).joinToString("\n")))
