@@ -20,7 +20,8 @@ Lint must pass with no errors (it fails the build). Notably: in composables read
 - A system = a folder under `systems/<name>/` + one line in `app/SystemRegistry.kt`. `core/` must not depend on any system.
 - Prefer `SystemAction.Logged` (generic screen: description, run/cancel, live log, history). Use `Custom` only when the log template doesn't fit.
 - Action/system `id`s are stable – settings and history are keyed by them.
-- Settings are per action (`ActionSettings`, prefixed `systemId/actionId/`). Secrets go through `putSecret`/`getSecret` (Keystore-encrypted); never store secrets in plain prefs or code.
+- Settings have two levels: `SystemSettings` (prefixed `systemId/`, shared by all actions – e.g. server connection; edited in `ManagedSystem.settingsScreen`, available to actions as `ActionContext.systemSettings`) and `ActionSettings` (prefixed `systemId/actionId/` – schedule, thresholds, options). When moving existing keys between levels, add a `MoveToSystemSettings` to `ManagedSystem.settingsMigrations` – never lose saved user settings. Secrets go through `putSecret`/`getSecret` (Keystore-encrypted); never store secrets in plain prefs or code.
+- Dates/elapsed time: `formatDateTime(instant, zone)` / `formatElapsed` (`core/model/TimeFormat.kt`); remote file timestamps via `RemoteUploader.fileInfo`.
 - Temp files go in `ActionContext.workDir` (auto-deleted). Blocking IO inside actions: wrap in `runInterruptible`, call `currentCoroutineContext().ensureActive()` between steps, always rethrow `CancellationException`.
 - Reuse `core/ui` building blocks (`SettingsScaffold`, `RemoteSettingsSection`, `ScheduleSection`, `LogView`) instead of new screens.
 - No DI framework – shared singletons live in `AppGraph` (`context.graph`).

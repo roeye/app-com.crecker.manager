@@ -3,6 +3,7 @@ package com.crecker.manager
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.crecker.manager.app.SystemRegistry
 import com.crecker.manager.core.run.ActionRunner
 import com.crecker.manager.core.run.Notifications
 import com.crecker.manager.core.run.RunHistory
@@ -31,7 +32,7 @@ class AppGraph(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val appPreferences = AppPreferences(context)
     val appLock = AppLock(appPreferences)
-    val settings = SettingsStore(context)
+    val settings = SettingsStore(context, SystemRegistry.systems.flatMap { it.settingsMigrations })
     val history = RunHistory(context)
     val runner = ActionRunner(context, settings, history, appScope)
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.crecker.manager.R
 import com.crecker.manager.core.settings.ActionSettings
+import com.crecker.manager.core.settings.SystemSettings
 import java.io.File
 
 enum class LogLevel { INFO, SUCCESS, WARN, ERROR }
@@ -54,7 +55,10 @@ interface ActionLog {
 class ActionContext(
     /** Context בשפת האפליקציה – להודעות לוג השתמשו ב-[getString]. */
     val appContext: Context,
+    /** ההגדרות של הפעולה הזו בלבד. */
     val settings: ActionSettings,
+    /** ההגדרות של המערכת – משותפות לכל הפעולות שלה (למשל פרטי החיבור לשרת). */
+    val systemSettings: SystemSettings,
     /** תיקייה זמנית ייחודית להרצה – נמחקת אוטומטית בסוף (גם בכשל/ביטול). */
     val workDir: File,
     val log: ActionLog,

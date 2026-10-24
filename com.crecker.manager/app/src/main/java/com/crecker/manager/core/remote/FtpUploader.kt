@@ -68,6 +68,21 @@ internal class FtpUploader(private val config: RemoteConfig) : RemoteUploader {
         }
     }
 
+    override fun fileInfo(path: String): RemoteFileInfo? {
+        // MDTM מחזיר UTC לפי התקן (RFC 3659). אם השרת לא תומך בו – MLST.
+        var modified = client.mdtmInstant(path)
+        if (modified == null && !lastReplyNotFound()) modified = client.mlistFile(path)?.timestampInstant
+        if (modified == null) {
+            if (lastReplyNotFound()) return null
+            throw LocalizedException(R.string.remote_err_file_info, path, reply)
+        }
+        val size = client.getSize(path)?.trim()?.toLongOrNull()
+        return RemoteFileInfo(modified, size)
+    }
+
+    /** התשובה האחרונה היא 550 – הקובץ לא קיים. */
+    private fun lastReplyNotFound() = client.replyCode == FTPReply.FILE_UNAVAILABLE
+
     override fun close() {
         runCatching { if (client.isConnected) client.logout() }
         runCatching { client.disconnect() }

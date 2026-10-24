@@ -8,11 +8,14 @@
 ```
 [מסך נעילה – אם הנעילה פעילה]
         ↓
-מסך בית (מערכות לפי קטגוריה)  →  מסך מערכת (רשימת פעולות)  →  מסך פעולה
+מסך בית (מערכות לפי קטגוריה)
    ├─ ⚙ הגדרות האפליקציה
-   └─ "חזרה" ×2 תוך שנייה → יציאה
-                                                                 ├─ ⚙ הגדרות
-                                                                 └─ ☰ היסטוריית הרצות → הרצה
+   ├─ "חזרה" ×2 תוך שנייה → יציאה
+   └─ מסך מערכת (רשימת פעולות)
+        ├─ ⚙ הגדרות המערכת (משותפות לכל הפעולות, למשל חיבור לשרת)
+        └─ מסך פעולה
+             ├─ ⚙ הגדרות הפעולה
+             └─ ☰ היסטוריית הרצות → הרצה
 ```
 
 ## מבנה התיקיות
@@ -29,13 +32,15 @@ com.crecker.manager/
 │   ├── AppLogo.kt         AppLogo / LogoTitle – הלוגו בכותרות ובמסך הנעילה
 │   └── AppNavHost.kt      ניווט
 ├── core/                  תשתית משותפת – לא תלויה באף מערכת
-│   ├── model/             ManagedSystem, SystemAction, RunModels (לוג, סטטוס, ActionContext)
+│   ├── model/             ManagedSystem, SystemAction, RunModels (לוג, סטטוס, ActionContext),
+│   │                      TimeFormat (תאריך לפי אזור זמן, "לפני X")
 │   ├── run/               ActionRunner, RunHistory, ActionScheduler (+Worker), Notifications
 │   ├── security/          AppLock (מצב נעילה), DeviceAuth (BiometricPrompt)
-│   ├── settings/          SettingsStore/ActionSettings (DataStore), SecretCipher (Keystore),
+│   ├── settings/          SettingsStore, SystemSettings/ActionSettings (DataStore), MoveToSystemSettings,
+│   │                      SecretCipher (Keystore),
 │   │                      AppPreferences / ThemeMode / AppLanguage, Context.localized()
 │   ├── net/               HttpFetcher
-│   ├── remote/            RemoteUploader: FTP / FTPS / SFTP
+│   ├── remote/            RemoteUploader: FTP / FTPS / SFTP (העלאה + fileInfo)
 │   └── ui/                LoggedActionScreen, LogView, טפסי הגדרות (חיבור מרוחק, תזמון)
 └── systems/               מערכת = תיקייה
     └── paisresults/
@@ -45,6 +50,11 @@ com.crecker.manager/
 
 ### `ManagedSystem`
 מערכת: `id` (יציב), `name` (שם פרטי, לא מתורגם), `description` ו-`category` (`@StringRes`), `icon`, `actions`, ו-`StatusLine()` אופציונלי לשורת סטטוס במסך הבית.
+
+אופציונלי:
+- `settingsScreen`: מסך **הגדרות המערכת** (כפתור ⚙ במסך המערכת), להגדרות שמשותפות לכל הפעולות, למשל פרטי החיבור לשרת.
+- `settingsMigrations`: העברות של הגדרות שמורות (ראו "הגדרות וסודות").
+- `LastRunLine(systemId, actionId, label)` בתוך `StatusLine()`: שורת "ריצה אחרונה". כשמציגים כמה פעולות, `label` הוא שם קצר של הפעולה.
 
 ### `SystemAction`
 - `title` (ו-`description` ב-`Logged`) הם `@StringRes`.
@@ -57,6 +67,7 @@ com.crecker.manager/
 ### `ActionContext`, מה שפעולה מקבלת בריצה
 - `log`: `info` / `success` / `warn` / `error` / `table(...)`. מוצג חי ונשמר להיסטוריה.
 - `settings`: ההגדרות **של הפעולה הזו בלבד** (המפתחות מקבלים prefix של `systemId/actionId/`).
+- `systemSettings`: ההגדרות **של המערכת**, משותפות לכל הפעולות שלה (prefix של `systemId/`).
 - `workDir`: תיקייה זמנית ייחודית להרצה. **נמחקת אוטומטית** בסוף, גם בכשל או בביטול.
 - `trigger`: `MANUAL` או `SCHEDULED`.
 
@@ -70,16 +81,27 @@ com.crecker.manager/
 JSON תחת `files/run-history/<system>__<action>/`. נשמרות 20 הרצות אחרונות לכל פעולה.
 
 ### הגדרות וסודות
-- DataStore (`settings.preferences_pb`).
+- DataStore (`settings.preferences_pb`), מופע יחיד ב-`AppGraph`.
+- שתי רמות, עם אותו API (`ScopedSettings`):
+  - **`SystemSettings`** (`store.forSystem(id)`): הגדרות שמשותפות לכל הפעולות של המערכת, כמו פרטי חיבור לשרת. נערכות במסך הגדרות המערכת.
+  - **`ActionSettings`** (`store.forAction(systemId, actionId)`): הגדרות של פעולה אחת, כמו תזמון, ספים ואפשרויות.
+- **העברת הגדרות:** כשהגדרה של פעולה הופכת למשותפת, המערכת מצהירה על `MoveToSystemSettings(systemId, actionId, keys)` ב-`settingsMigrations`. ההעברה רצה **פעם אחת, לפני הקריאה הראשונה** מה-DataStore (DataMigration), כך שאין מצב שבו פעולה, כולל מתוזמנת, קוראת לפני שההעברה הסתיימה. ערך שכבר קיים ברמת המערכת לא נדרס. סודות מועתקים מוצפנים כמו שהם, כי המפתח זהה.
 - סודות (`putSecret`/`getSecret`) מוצפנים ב-AES-256-GCM עם מפתח ב-Android Keystore.
 - קובץ ההגדרות **מוחרג מגיבוי** (`backup_rules.xml`, `data_extraction_rules.xml`), כי מפתח ה-Keystore לא עובר גיבוי ממילא.
 
 ### חיבור מרוחק (`core/remote`)
 - `RemoteUploader.create(config)` מחזיר FTP, FTPS (explicit TLS) או SFTP.
 - `uploadAtomic`: העלאה לשם `name.tmp` ואז rename, כך שהאתר לא קורא קובץ חצי מועלה. אם rename נכשל על קובץ קיים: מחיקה ואז rename.
+- `fileInfo(path)`: זמן השינוי האחרון (ב-UTC) וגודל של קובץ, או `null` אם הקובץ לא קיים. ב-FTP: `MDTM`, ואם השרת לא תומך בו, `MLST`. הגודל מגיע מ-`SIZE`. ב-SFTP: `stat`.
+- `RemoteConfig.remotePath(name)`: נתיב מלא לקובץ בתוך תיקיית היעד.
 - FTP במצב passive ובינארי. Timeout של 30 שניות.
 - SFTP: מפתח השרת **לא נבדק** (`StrictHostKeyChecking=no`). לשיפור בעתיד: לשמור את טביעת האצבע בחיבור הראשון ולוודא אותה בהמשך (TOFU).
-- טופס גנרי `RemoteSettingsSection` כולל בחירת פרוטוקול, פורט (ריק = ברירת מחדל), סיסמה מוצפנת ו**בדיקת חיבור**.
+- טופס גנרי `RemoteSettingsSection` כולל בחירת פרוטוקול, פורט (ריק = ברירת מחדל), סיסמה מוצפנת ו**בדיקת חיבור**. הוא עובד גם עם `SystemSettings` וגם עם `ActionSettings`. אם כמה פעולות מתחברות לאותו שרת, ההגדרות שייכות למערכת.
+
+### זמנים
+`core/model/TimeFormat.kt`:
+- `formatDateTime(instant, zone)`: `dd/MM/yyyy HH:mm:ss` באזור זמן נתון (למשל `Asia/Jerusalem`, כולל שעון קיץ).
+- `formatElapsed(context, from, now)`: "לפני 2 ימ׳ 3 שע׳". מוצגות עד שתי היחידות הגדולות. מתחת לדקה: "לפני פחות מדקה". זמן עתידי (הפרש שעונים בין שרת למכשיר): "… בעתיד".
 
 ### תזמון
 - `ScheduleSection` (טופס) ו-`ActionScheduler` (WorkManager periodic, מינימום 15 דקות, רק כשיש רשת).
@@ -90,9 +112,10 @@ JSON תחת `files/run-history/<system>__<action>/`. נשמרות 20 הרצות 
 
 1. יוצרים תיקייה `systems/<name>/`.
 2. יוצרים `object MySystem : ManagedSystem` עם `id` יציב, שם, קטגוריה ואייקון.
-3. מוסיפים את הפעולות (ראו למטה). כל הטקסטים נכנסים ל-`values/strings.xml` ול-`values-iw/strings.xml` עם prefix של המערכת (למשל `pais_`).
-4. מוסיפים `MySystem` ל-`SystemRegistry.systems`.
-5. מתעדים ב-`docs/systems/<name>.md` ומוסיפים שורה לטבלה ב-`README.md`.
+3. אם יש הגדרות שמשותפות לכמה פעולות (למשל חיבור לשרת), מגדירים `settingsScreen` ברמת המערכת.
+4. מוסיפים את הפעולות (ראו למטה). כל הטקסטים נכנסים ל-`values/strings.xml` ול-`values-iw/strings.xml` עם prefix של המערכת (למשל `pais_`).
+5. מוסיפים `MySystem` ל-`SystemRegistry.systems`.
+6. מתעדים ב-`docs/systems/<name>.md` ומוסיפים שורה לטבלה ב-`README.md`.
 
 ## איך מוסיפים פעולה
 
@@ -116,19 +139,27 @@ object MyAction {
 }
 ```
 
-מסך הגדרות עם חיבור מרוחק ותזמון נבנה מהרכיבים הקיימים:
+מסכי ההגדרות נבנים מהרכיבים הקיימים. חיבור לשרת הוא בדרך כלל הגדרה **של המערכת** (`ManagedSystem.settingsScreen`):
 
 ```kotlin
-val remote = rememberRemoteFormState(settings, defaultDir = "/path")
-val schedule = rememberScheduleFormState(settings)
-SettingsScaffold(title, loaded = remote.loaded && schedule.loaded, onBack,
-    onSave = { remote.validationError() ?: run { remote.save(); schedule.saveAndApply(context); null } }) {
+val remote = rememberRemoteFormState(systemSettings, defaultDir = "/path")
+SettingsScaffold(title, loaded = remote.loaded, onBack,
+    onSave = { remote.validationError() ?: run { remote.save(); null } }) {
     RemoteSettingsSection(remote)
+}
+```
+
+תזמון הוא תמיד הגדרה **של הפעולה** (`SystemAction.Logged.settingsScreen`):
+
+```kotlin
+val schedule = rememberScheduleFormState(settings)
+SettingsScaffold(title, loaded = schedule.loaded, onBack,
+    onSave = { schedule.saveAndApply(context); null }) {
     ScheduleSection(schedule)
 }
 ```
 
-ובזמן ריצה: `RemoteSettings.load(settings, defaultDir)` ואז `RemoteUploader.create(config)`.
+ובזמן ריצה: `RemoteSettings.load(systemSettings, defaultDir)` ואז `RemoteUploader.create(config)`.
 
 ## כללים
 

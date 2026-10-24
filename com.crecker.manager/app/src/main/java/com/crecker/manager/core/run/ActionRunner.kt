@@ -76,7 +76,7 @@ class ActionRunner(
         val log = LiveLog(key)
         val workDir = File(appContext.cacheDir, "runs/$runId").apply { mkdirs() }
         val res = appContext.localized()
-        val context = ActionContext(res, settingsStore.forAction(systemId, action.id), workDir, log, trigger)
+        val context = ActionContext(res, settingsStore.forAction(systemId, action.id), settingsStore.forSystem(systemId), workDir, log, trigger)
 
         var status = RunStatus.FAILED
         try {

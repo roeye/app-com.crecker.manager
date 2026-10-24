@@ -112,16 +112,26 @@ private fun DoubleBackToExit() {
 
 private const val EXIT_WINDOW_MS = 1_000L
 
-/** מסך מערכת – רשימת הפעולות שלה. */
+/** מסך מערכת – רשימת הפעולות שלה, ו-⚙ להגדרות המערכת (אם יש). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SystemScreen(system: ManagedSystem, onBack: () -> Unit, onOpenAction: (SystemAction) -> Unit) {
+fun SystemScreen(
+    system: ManagedSystem,
+    onBack: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenAction: (SystemAction) -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(system.name) },
                 navigationIcon = {
                     IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
+                },
+                actions = {
+                    if (system.settingsScreen != null) {
+                        IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, stringResource(R.string.system_settings)) }
+                    }
                 },
             )
         },

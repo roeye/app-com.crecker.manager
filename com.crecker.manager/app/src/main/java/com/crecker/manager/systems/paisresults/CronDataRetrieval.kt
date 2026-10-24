@@ -24,13 +24,10 @@ import com.crecker.manager.core.model.SystemAction
 import com.crecker.manager.core.model.describe
 import com.crecker.manager.core.net.HttpFetcher
 import com.crecker.manager.core.remote.RemoteConfig
-import com.crecker.manager.core.remote.RemoteSettings
 import com.crecker.manager.core.remote.RemoteUploader
 import com.crecker.manager.core.settings.ActionSettings
-import com.crecker.manager.core.ui.RemoteSettingsSection
 import com.crecker.manager.core.ui.ScheduleSection
 import com.crecker.manager.core.ui.SettingsScaffold
-import com.crecker.manager.core.ui.rememberRemoteFormState
 import com.crecker.manager.core.ui.rememberScheduleFormState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
@@ -46,7 +43,6 @@ import java.io.File
  */
 object CronDataRetrieval {
     const val ID = "cron_data_retrieval"
-    const val DEFAULT_REMOTE_DIR = "/paisresults.co.il/data"
     const val KEY_ONLY_IF_ALL_VALID = "only_if_all_valid"
 
     private const val MAX_ATTEMPTS = 3
@@ -68,12 +64,7 @@ object CronDataRetrieval {
     }
 
     private suspend fun ActionContext.execute(): RunStatus {
-        val remote = RemoteSettings.load(settings, DEFAULT_REMOTE_DIR)
-        val missing = remote.missingFields()
-        if (missing.isNotEmpty()) {
-            log.error(getString(R.string.pais_log_missing_settings, missing.joinToString { getString(it) }))
-            return RunStatus.FAILED
-        }
+        val remote = loadPaisRemote() ?: return RunStatus.FAILED
         val onlyIfAllValid = settings.getBoolean(KEY_ONLY_IF_ALL_VALID, false)
 
         // שלב 1 – הורדה
@@ -226,21 +217,17 @@ private fun OnlyIfAllValidOption(settings: ActionSettings) {
 @Composable
 private fun CronSettingsScreen(settings: ActionSettings, onBack: () -> Unit) {
     val context = LocalContext.current
-    val remote = rememberRemoteFormState(settings, CronDataRetrieval.DEFAULT_REMOTE_DIR)
     val schedule = rememberScheduleFormState(settings)
     SettingsScaffold(
         title = stringResource(R.string.pais_settings_title),
-        loaded = remote.loaded && schedule.loaded,
+        loaded = schedule.loaded,
         onBack = onBack,
         onSave = {
-            remote.validationError() ?: run {
-                remote.save()
-                schedule.saveAndApply(context)
-                null
-            }
+            schedule.saveAndApply(context)
+            null
         },
     ) {
-        RemoteSettingsSection(remote)
+        RemoteInSystemSettingsNote()
         ScheduleSection(schedule)
     }
 }

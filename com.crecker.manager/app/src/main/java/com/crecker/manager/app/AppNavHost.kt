@@ -25,6 +25,7 @@ import com.crecker.manager.graph
 /**
  * ניווט:
  * home → settings (הגדרות האפליקציה)
+ * home → system/{systemId} → system/{systemId}/settings (הגדרות המערכת)
  * home → system/{systemId} → system/{systemId}/action/{actionId}
  *   ├─ …/settings
  *   └─ …/history → …/history/{runId}
@@ -33,6 +34,7 @@ private object Routes {
     const val HOME = "home"
     const val APP_SETTINGS = "settings"
     const val SYSTEM = "system/{systemId}"
+    const val SYSTEM_SETTINGS = "$SYSTEM/settings"
     const val ACTION = "$SYSTEM/action/{actionId}"
     const val SETTINGS = "$ACTION/settings"
     const val HISTORY = "$ACTION/history"
@@ -58,7 +60,19 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable(Routes.SYSTEM) { entry ->
             WithSystem(entry) { system ->
-                SystemScreen(system, back) { navController.navigate(Routes.action(system.id, it.id)) }
+                SystemScreen(
+                    system = system,
+                    onBack = back,
+                    onOpenSettings = { navController.navigate("${Routes.system(system.id)}/settings") },
+                    onOpenAction = { navController.navigate(Routes.action(system.id, it.id)) },
+                )
+            }
+        }
+        composable(Routes.SYSTEM_SETTINGS) { entry ->
+            WithSystem(entry) { system ->
+                val store = LocalContext.current.graph.settings
+                val settings = remember(system.id) { store.forSystem(system.id) }
+                system.settingsScreen?.invoke(settings, back) ?: NotFound()
             }
         }
         composable(Routes.ACTION) { entry ->

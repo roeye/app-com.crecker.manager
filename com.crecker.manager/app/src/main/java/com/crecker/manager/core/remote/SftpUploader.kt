@@ -8,6 +8,7 @@ import com.jcraft.jsch.JSchException
 import com.jcraft.jsch.Session
 import com.jcraft.jsch.SftpException
 import java.io.File
+import java.time.Instant
 
 /**
  * SFTP (מעל SSH) דרך JSch.
@@ -71,6 +72,15 @@ internal class SftpUploader(private val config: RemoteConfig) : RemoteUploader {
             runCatching { sftp.rm(temp) }
             throw LocalizedException(R.string.remote_err_upload, e.message.orEmpty(), cause = e)
         }
+    }
+
+    override fun fileInfo(path: String): RemoteFileInfo? = try {
+        val attrs = sftp.stat(path)
+        // mtime הוא unsigned 32-bit (שניות מ-1970, UTC)
+        RemoteFileInfo(Instant.ofEpochSecond(attrs.mTime.toLong() and 0xFFFFFFFFL), attrs.size)
+    } catch (e: SftpException) {
+        if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) null
+        else throw LocalizedException(R.string.remote_err_file_info, path, e.message.orEmpty(), cause = e)
     }
 
     override fun close() {

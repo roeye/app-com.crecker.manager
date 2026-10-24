@@ -7,6 +7,15 @@
     <string name="not_found">לא נמצא</string>
     <string name="settings">הגדרות</string>
     <string name="actions_header">פעולות</string>
+    <string name="system_settings">הגדרות המערכת</string>
+
+    <!-- Elapsed time -->
+    <string name="time_days">%1$d ימ׳</string>
+    <string name="time_hours">%1$d שע׳</string>
+    <string name="time_minutes">%1$d דק׳</string>
+    <string name="time_ago">לפני %1$s</string>
+    <string name="time_in_future">%1$s בעתיד</string>
+    <string name="time_less_than_minute_ago">לפני פחות מדקה</string>
 
     <!-- App settings -->
     <string name="settings_category_security">אבטחה</string>
@@ -74,6 +83,8 @@
     <string name="run_not_found">ההרצה לא נמצאה (ייתכן שנמחקה – נשמרות רק 20 האחרונות).</string>
     <string name="last_run_never">לא הורץ עדיין</string>
     <string name="last_run">ריצה אחרונה: %1$s · %2$s</string>
+    <string name="last_run_never_labeled">%1$s: לא הורץ עדיין</string>
+    <string name="last_run_labeled">%1$s: %2$s · %3$s</string>
 
     <!-- Remote settings -->
     <string name="error_invalid_port">פורט לא תקין</string>
@@ -121,18 +132,23 @@
     <string name="remote_err_not_connected">לא מחובר</string>
     <string name="remote_err_connect">ההתחברות נכשלה (%1$s)</string>
     <string name="remote_err_dir">לא ניתן ליצור/לגשת לתיקייה %1$s (%2$s)</string>
+    <string name="remote_err_file_info">לא ניתן לקרוא את פרטי הקובץ %1$s (%2$s)</string>
 
     <!-- Categories -->
     <string name="category_sites">אתרים</string>
 
     <!-- paisresults -->
     <string name="pais_description">אתר תוצאות הגרלות מפעל הפיס.</string>
+    <string name="pais_system_settings_title">הגדרות – paisresults.co.il</string>
+    <string name="pais_system_settings_hint">ההגדרות האלה משותפות לכל הפעולות של paisresults.co.il.</string>
+    <string name="pais_remote_in_system_settings">פרטי החיבור לשרת נמצאים בהגדרות המערכת (⚙ במסך paisresults.co.il), והם משותפים לכל הפעולות.</string>
+    <string name="pais_cron_short">משיכת נתונים</string>
     <string name="pais_cron_title">ביצוע cron data retrieval</string>
     <string name="pais_cron_description">הפעולה מקבלת את המידע של הגרלות הפיס (10 קבצים: 5 קבצי מידע + 5 קבצי זמני הגרלה הבאה)</string>
     <string name="pais_settings_title">הגדרות – cron data retrieval</string>
     <string name="pais_only_if_all_valid">העלה קבצים רק אם כל הקבצים תקינים</string>
     <string name="pais_only_if_all_valid_hint">תקין = HTTP 200, מעל 1KB (קבצי nextraffle: מעל 50 בתים) ותוכן צפוי</string>
-    <string name="pais_log_missing_settings">חסרים פרטי חיבור בהגדרות (⚙): %1$s</string>
+    <string name="pais_log_missing_settings">חסרים פרטי חיבור בהגדרות המערכת (⚙ במסך paisresults.co.il): %1$s</string>
     <string name="pais_log_step_download">שלב 1/2 – הורדת %1$d קבצים מ-pais.co.il</string>
     <string name="pais_log_all_valid">כל %1$d הקבצים ירדו תקינים</string>
     <string name="pais_log_some_invalid">%1$d מתוך %2$d קבצים תקינים, %3$d נכשלו</string>
@@ -153,4 +169,24 @@
     <string name="pais_invalid_http">HTTP %1$d</string>
     <string name="pais_invalid_small">קטן מדי (%1$d בתים, מינימום %2$d)</string>
     <string name="pais_invalid_marker">התוכן לא מכיל \'%1$s\' – כנראה התקבל דף שגיאה</string>
+
+    <!-- paisresults – check last update -->
+    <string name="pais_check_short">בדיקת עדכון</string>
+    <string name="pais_check_title">בדיקת עדכון אחרון</string>
+    <string name="pais_check_description">מציגה מתי כל אחד מ-10 הקבצים בשרת עודכן לאחרונה (לפי שעון ישראל), וכמה זמן עבר מאז. קובץ שלא עודכן יותר מהסף מסומן כישן.</string>
+    <string name="pais_check_settings_title">הגדרות – בדיקת עדכון אחרון</string>
+    <string name="pais_check_section">קבצים ישנים</string>
+    <string name="pais_check_stale_hours">סימון קובץ כישן אחרי (שעות)</string>
+    <string name="pais_check_stale_hours_hint">ברירת מחדל: %1$d. טווח: 1–%2$d. קובץ ישן הופך את ההרצה להצלחה חלקית, והרצה מתוזמנת שולחת התראה.</string>
+    <string name="pais_check_error_hours">מספר שעות לא תקין</string>
+    <string name="pais_check_log_start">בודק %1$d קבצים ב-%2$s (ישן אחרי %3$d שעות)</string>
+    <string name="pais_check_log_missing">✗ %1$s: לא נמצא בשרת</string>
+    <string name="pais_check_log_stale">⚠ %1$s – %2$s – לא עודכן בטווח הסף</string>
+    <string name="pais_check_log_counts">%1$d עדכניים, %2$d ישנים, %3$d חסרים או נכשלו</string>
+    <string name="pais_check_log_oldest">הקובץ הישן ביותר: %1$s – %2$s</string>
+    <string name="pais_check_stale">ישן</string>
+    <string name="pais_check_not_found">לא נמצא</string>
+    <string name="pais_col_last_update">עדכון אחרון (שעון ישראל)</string>
+    <string name="pais_col_elapsed">זמן שחלף</string>
+    <string name="pais_col_status">מצב</string>
 </resources>

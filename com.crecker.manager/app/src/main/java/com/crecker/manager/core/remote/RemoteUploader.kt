@@ -3,6 +3,7 @@ package com.crecker.manager.core.remote
 import com.crecker.manager.R
 import java.io.Closeable
 import java.io.File
+import java.time.Instant
 
 enum class RemoteProtocol(val label: String, val defaultPort: Int) {
     FTP("FTP", 21),
@@ -29,11 +30,17 @@ data class RemoteConfig(
         if (remoteDir.isBlank()) add(R.string.field_remote_dir)
     }
 
+    /** נתיב מלא בשרת לקובץ בתוך [remoteDir]. */
+    fun remotePath(name: String) = "${remoteDir.trimEnd('/')}/$name"
+
     override fun toString() = "${protocol.label} $user@$host:$effectivePort$remoteDir"
 }
 
+/** מידע על קובץ בשרת. [size] הוא null אם השרת לא החזיר גודל. */
+data class RemoteFileInfo(val modified: Instant, val size: Long?)
+
 /**
- * העלאת קבצים לשרת מרוחק. כל המתודות חוסמות (blocking) – יש לקרוא להן מ-Dispatchers.IO.
+ * העלאת קבצים לשרת מרוחק וקריאת מידע עליהם. כל המתודות חוסמות (blocking) – יש לקרוא להן מ-Dispatchers.IO.
  * שגיאות נזרקות כ-[com.crecker.manager.core.model.LocalizedException].
  */
 interface RemoteUploader : Closeable {
@@ -46,6 +53,9 @@ interface RemoteUploader : Closeable {
      * מעלה בשם זמני (`name.tmp`) ואז משנה לשם הסופי – כך שהאתר אף פעם לא קורא קובץ חצי-מועלה.
      */
     fun uploadAtomic(local: File, remoteName: String)
+
+    /** זמן השינוי האחרון (וגודל) של קובץ לפי נתיב מלא, או null אם הקובץ לא קיים. */
+    fun fileInfo(path: String): RemoteFileInfo?
 
     companion object {
         fun create(config: RemoteConfig): RemoteUploader = when (config.protocol) {

@@ -6,7 +6,9 @@
 
 | מערכת | פעולות | תיעוד |
 |---|---|---|
-| paisresults.co.il | ביצוע cron data retrieval | [docs/systems/paisresults.md](docs/systems/paisresults.md) |
+| paisresults.co.il | ביצוע cron data retrieval, בדיקת עדכון אחרון (מתי כל קובץ עודכן בשרת, לפי שעון ישראל, עם התראה על קבצים ישנים) | [docs/systems/paisresults.md](docs/systems/paisresults.md) |
+
+לכל מערכת יכולות להיות **הגדרות מערכת** (⚙ במסך המערכת), שמשותפות לכל הפעולות שלה, למשל פרטי החיבור לשרת. לכל פעולה יש גם הגדרות משלה (⚙ במסך הפעולה), כמו תזמון.
 
 ## מבנה
 

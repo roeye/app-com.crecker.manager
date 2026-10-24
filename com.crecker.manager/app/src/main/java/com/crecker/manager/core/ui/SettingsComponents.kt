@@ -67,6 +67,7 @@ import com.crecker.manager.core.run.Notifications
 import com.crecker.manager.core.run.ScheduleKeys
 import com.crecker.manager.core.model.describe
 import com.crecker.manager.core.settings.ActionSettings
+import com.crecker.manager.core.settings.ScopedSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -133,7 +134,7 @@ fun SectionTitle(text: String) {
 
 // region Remote (FTP / FTPS / SFTP)
 
-class RemoteFormState(private val settings: ActionSettings, private val defaultDir: String) {
+class RemoteFormState(private val settings: ScopedSettings, private val defaultDir: String) {
     var loaded by mutableStateOf(false)
     var protocol by mutableStateOf(RemoteProtocol.FTP)
     var host by mutableStateOf("")
@@ -184,8 +185,8 @@ class RemoteFormState(private val settings: ActionSettings, private val defaultD
 }
 
 @Composable
-fun rememberRemoteFormState(settings: ActionSettings, defaultDir: String): RemoteFormState {
-    val state = remember(settings.systemId, settings.actionId) { RemoteFormState(settings, defaultDir) }
+fun rememberRemoteFormState(settings: ScopedSettings, defaultDir: String): RemoteFormState {
+    val state = remember(settings.prefix) { RemoteFormState(settings, defaultDir) }
     LaunchedEffect(state) { state.load() }
     return state
 }

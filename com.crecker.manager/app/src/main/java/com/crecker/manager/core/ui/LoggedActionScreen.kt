@@ -1,5 +1,6 @@
 package com.crecker.manager.core.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -224,18 +225,29 @@ fun RunDetailScreen(systemId: String, action: SystemAction, runId: String, onBac
     }
 }
 
-/** שורת "ריצה אחרונה" – לשימוש ב-[com.crecker.manager.core.model.ManagedSystem.StatusLine]. */
+/**
+ * שורת "ריצה אחרונה" – לשימוש ב-[com.crecker.manager.core.model.ManagedSystem.StatusLine].
+ * [label] (שם קצר של הפעולה) נדרש כשמציגים כמה שורות כאלה.
+ */
 @Composable
-fun LastRunLine(systemId: String, actionId: String) {
+fun LastRunLine(systemId: String, actionId: String, @StringRes label: Int? = null) {
     val run = rememberLatestRun(systemId, actionId)
+    val labelText = label?.let { stringResource(it) }
     if (run == null) {
-        Text(stringResource(R.string.last_run_never), style = MaterialTheme.typography.bodySmall)
+        Text(
+            if (labelText == null) stringResource(R.string.last_run_never)
+            else stringResource(R.string.last_run_never_labeled, labelText),
+            style = MaterialTheme.typography.bodySmall,
+        )
         return
     }
+    val status = stringResource(run.status.label)
+    val time = formatDateTime(run.startedAt)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text("● ", color = LogColors.of(run.status), style = MaterialTheme.typography.bodySmall)
         Text(
-            stringResource(R.string.last_run, stringResource(run.status.label), formatDateTime(run.startedAt)),
+            if (labelText == null) stringResource(R.string.last_run, status, time)
+            else stringResource(R.string.last_run_labeled, labelText, status, time),
             style = MaterialTheme.typography.bodySmall,
         )
     }

@@ -9,6 +9,15 @@
     <string name="not_found">Not found</string>
     <string name="settings">Settings</string>
     <string name="actions_header">Actions</string>
+    <string name="system_settings">System settings</string>
+
+    <!-- Elapsed time -->
+    <string name="time_days">%1$d d</string>
+    <string name="time_hours">%1$d h</string>
+    <string name="time_minutes">%1$d min</string>
+    <string name="time_ago">%1$s ago</string>
+    <string name="time_in_future">%1$s in the future</string>
+    <string name="time_less_than_minute_ago">less than a minute ago</string>
 
     <!-- App settings -->
     <string name="settings_category_security">Security</string>
@@ -78,6 +87,8 @@
     <string name="run_not_found">Run not found (it may have been deleted – only the last 20 are kept).</string>
     <string name="last_run_never">Not run yet</string>
     <string name="last_run">Last run: %1$s · %2$s</string>
+    <string name="last_run_never_labeled">%1$s: not run yet</string>
+    <string name="last_run_labeled">%1$s: %2$s · %3$s</string>
 
     <!-- Remote settings -->
     <string name="error_invalid_port">Invalid port</string>
@@ -125,18 +136,23 @@
     <string name="remote_err_not_connected">Not connected</string>
     <string name="remote_err_connect">Connection failed (%1$s)</string>
     <string name="remote_err_dir">Cannot create/access folder %1$s (%2$s)</string>
+    <string name="remote_err_file_info">Cannot read the details of %1$s (%2$s)</string>
 
     <!-- Categories -->
     <string name="category_sites">Sites</string>
 
     <!-- paisresults -->
     <string name="pais_description">Pais lottery results website.</string>
+    <string name="pais_system_settings_title">Settings – paisresults.co.il</string>
+    <string name="pais_system_settings_hint">These settings are shared by all actions of paisresults.co.il.</string>
+    <string name="pais_remote_in_system_settings">Server connection details are in the system settings (⚙ on the paisresults.co.il screen) and are shared by all actions.</string>
+    <string name="pais_cron_short">Data retrieval</string>
     <string name="pais_cron_title">Run cron data retrieval</string>
     <string name="pais_cron_description">Fetches the Pais lottery data (10 files: 5 data files + 5 next-draw time files)</string>
     <string name="pais_settings_title">Settings – cron data retrieval</string>
     <string name="pais_only_if_all_valid">Upload files only if all files are valid</string>
     <string name="pais_only_if_all_valid_hint">Valid = HTTP 200, over 1KB (nextraffle files: over 50 bytes) and expected content</string>
-    <string name="pais_log_missing_settings">Missing connection details in settings (⚙): %1$s</string>
+    <string name="pais_log_missing_settings">Missing connection details in the system settings (⚙ on the paisresults.co.il screen): %1$s</string>
     <string name="pais_log_step_download">Step 1/2 – downloading %1$d files from pais.co.il</string>
     <string name="pais_log_all_valid">All %1$d files downloaded and valid</string>
     <string name="pais_log_some_invalid">%1$d of %2$d files valid, %3$d failed</string>
@@ -157,4 +173,24 @@
     <string name="pais_invalid_http">HTTP %1$d</string>
     <string name="pais_invalid_small">Too small (%1$d bytes, minimum %2$d)</string>
     <string name="pais_invalid_marker">Content does not contain \'%1$s\' – probably an error page</string>
+
+    <!-- paisresults – check last update -->
+    <string name="pais_check_short">Update check</string>
+    <string name="pais_check_title">Check last update</string>
+    <string name="pais_check_description">Shows when each of the 10 files on the server was last updated (Israel time) and how long ago. A file that was not updated for longer than the threshold is marked as stale.</string>
+    <string name="pais_check_settings_title">Settings – check last update</string>
+    <string name="pais_check_section">Stale files</string>
+    <string name="pais_check_stale_hours">Mark a file as stale after (hours)</string>
+    <string name="pais_check_stale_hours_hint">Default: %1$d. Allowed: 1–%2$d. A stale file makes the run a partial success, and scheduled runs send a notification.</string>
+    <string name="pais_check_error_hours">Invalid number of hours</string>
+    <string name="pais_check_log_start">Checking %1$d files on %2$s (stale after %3$d hours)</string>
+    <string name="pais_check_log_missing">✗ %1$s: not found on the server</string>
+    <string name="pais_check_log_stale">⚠ %1$s – %2$s – not updated within the threshold</string>
+    <string name="pais_check_log_counts">%1$d up to date, %2$d stale, %3$d missing or failed</string>
+    <string name="pais_check_log_oldest">Oldest file: %1$s – %2$s</string>
+    <string name="pais_check_stale">stale</string>
+    <string name="pais_check_not_found">not found</string>
+    <string name="pais_col_last_update">Last update (Israel time)</string>
+    <string name="pais_col_elapsed">Elapsed</string>
+    <string name="pais_col_status">Status</string>
 </resources>

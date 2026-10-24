@@ -42,5 +42,7 @@ fun PaisFile.validate(httpCode: Int, bytes: ByteArray): ValidationProblem? = whe
     else -> null
 }
 
-fun formatSize(bytes: Int): String =
+fun formatSize(bytes: Long): String =
     if (bytes < 1024) "$bytes B" else "%.1f KB".format(java.util.Locale.US, bytes / 1024.0)
+
+fun formatSize(bytes: Int): String = formatSize(bytes.toLong())
