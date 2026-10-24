@@ -54,7 +54,7 @@ com.crecker.manager/
 אופציונלי:
 - `settingsScreen`: מסך **הגדרות המערכת** (כפתור ⚙ במסך המערכת), להגדרות שמשותפות לכל הפעולות, למשל פרטי החיבור לשרת.
 - `settingsMigrations`: העברות של הגדרות שמורות (ראו "הגדרות וסודות").
-- `LastRunLine(systemId, actionId, label)` בתוך `StatusLine()`: שורת "ריצה אחרונה". כשמציגים כמה פעולות, `label` הוא שם קצר של הפעולה.
+- `LastRunLine(systemId, actionId, label)` בתוך `StatusLine()`: שורת "ריצה אחרונה" עם נקודה צבעונית לפי הסטטוס. כשמציגים כמה פעולות, `label` הוא שם קצר של הפעולה. אם הטקסט נשבר לכמה שורות (למשל במסך לאורך), הנקודה נשארת **בגובה השורה הראשונה** ולא ממורכזת לכל הטקסט (`Alignment.Top`, ולנקודה ולטקסט אותו style).
 
 ### `SystemAction`
 - `title` (ו-`description` ב-`Logged`) הם `@StringRes`.

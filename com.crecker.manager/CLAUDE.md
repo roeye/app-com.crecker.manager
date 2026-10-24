@@ -11,6 +11,10 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 .\gradlew.bat :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
 
+The built APK is `app/build/outputs/apk/debug/app-debug.apk` – install that one (`adb install -r -t …`). `app/build/intermediates/apk/debug/` is Android Studio's own build and is not updated by `gradlew`.
+
+**On-device testing** (the user's phone over wireless adb): screenshots are black because of `FLAG_SECURE`, so read the UI with `adb shell uiautomator dump` (text + bounds) and tap with `input tap`. A fresh install starts locked – the user unlocks. In Git Bash set `MSYS_NO_PATHCONV=1` before adb paths like `/sdcard/…`. Restore anything changed for a test (thresholds, app language) afterwards.
+
 Lint must pass with no errors (it fails the build). Notably: in composables read strings via `stringResource` / `LocalResources.current`, never `LocalContext.current.getString` (`LocalContextGetResourceValueCall`).
 
 ## Conventions
@@ -26,7 +30,8 @@ Lint must pass with no errors (it fails the build). Notably: in composables read
 - Reuse `core/ui` building blocks (`SettingsScaffold`, `RemoteSettingsSection`, `ScheduleSection`, `LogView`) instead of new screens.
 - No DI framework – shared singletons live in `AppGraph` (`context.graph`).
 - `MainActivity` is an `AppCompatActivity` with an AppCompat theme – required for per-app language and night mode (`AppCompatDelegate`). App-wide preferences: `AppPreferences` (theme, app lock) and `AppLanguage` (language, persisted by the system/AppCompat).
-- App lock: `AppLock` + `DeviceAuth` (`core/security`). Any setting that weakens security must go through `DeviceAuth.authenticate`. The activity uses `FLAG_SECURE` – keep it.
+- App lock: `AppLock` + `DeviceAuth` (`core/security`). Any setting that weakens security must go through `DeviceAuth.authenticate` with the default `requireConfirmation = true`; only the app-entry unlock (`LockScreen`) passes `false`, so face unlock enters without a "Confirm" tap. The activity uses `FLAG_SECURE` – keep it.
+- Home status lines (`LastRunLine`): the status dot is top-aligned with the first line of the text (`Alignment.Top`, same text style), not centered – the text may wrap on narrow/portrait screens.
 - App settings screen: settings are grouped by category (Security first, then Display & language); each setting has an icon and opens a `ChoiceDialog`.
 - Icons: launcher icon is a vector adaptive icon (background / foreground / monochrome in `res/drawable`); notifications use `ic_notification` (single color). In-app logo: `AppLogo` / `LogoTitle`. Material icons come from `material-icons-extended`.
 - Home screen exits only on a double back press within 1 s (`DoubleBackToExit`).
