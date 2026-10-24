@@ -29,8 +29,19 @@ object DeviceAuth {
             context.getSystemService(KeyguardManager::class.java).isDeviceSecure
         }
 
-    /** מציג את דיאלוג האימות של המערכת. [onResult] נקרא פעם אחת: true = אומת, false = בוטל/נכשל. */
-    fun authenticate(context: Context, title: String, subtitle: String, onResult: (Boolean) -> Unit) {
+    /**
+     * מציג את דיאלוג האימות של המערכת. [onResult] נקרא פעם אחת: true = אומת, false = בוטל/נכשל.
+     *
+     * @param requireConfirmation false = אחרי זיהוי פנים תקין נכנסים מיד, בלי ללחוץ "אישור".
+     * זה רמז למערכת (Android 10+), והיצרן רשאי להתעלם ממנו. לשינויים שמחלישים אבטחה – להשאיר true.
+     */
+    fun authenticate(
+        context: Context,
+        title: String,
+        subtitle: String,
+        requireConfirmation: Boolean = true,
+        onResult: (Boolean) -> Unit,
+    ) {
         val activity = context.findFragmentActivity() ?: return onResult(false)
         val appLock = activity.graph.appLock
         appLock.authenticating = true
@@ -50,6 +61,7 @@ object DeviceAuth {
             .setTitle(title)
             .setSubtitle(subtitle)
             .setAllowedAuthenticators(AUTHENTICATORS)
+            .setConfirmationRequired(requireConfirmation)
             .build()
         BiometricPrompt(activity, ContextCompat.getMainExecutor(activity), callback).authenticate(info)
     }

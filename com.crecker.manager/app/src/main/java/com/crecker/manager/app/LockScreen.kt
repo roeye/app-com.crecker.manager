@@ -49,7 +49,10 @@ fun LockScreen() {
     var available by remember { mutableStateOf(DeviceAuth.isAvailable(context)) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { available = DeviceAuth.isAvailable(context) }
 
-    fun prompt() = DeviceAuth.authenticate(context, promptTitle, promptSubtitle) { ok -> if (ok) appLock.unlock() }
+    // כניסה לאפליקציה – בלי "אישור" אחרי זיהוי פנים
+    fun prompt() = DeviceAuth.authenticate(context, promptTitle, promptSubtitle, requireConfirmation = false) { ok ->
+        if (ok) appLock.unlock()
+    }
 
     LaunchedEffect(available) { if (available) prompt() }
     // "חזרה" במסך הנעול יוצאת מהאפליקציה ולא מנווטת מאחורי הנעילה

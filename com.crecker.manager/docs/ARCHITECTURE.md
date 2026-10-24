@@ -197,6 +197,7 @@ SettingsScaffold(title, loaded = schedule.loaded, onBack,
 כניסה לאפליקציה רק אחרי אימות מול נעילת המכשיר.
 
 - **`DeviceAuth`** (`core/security`): עטיפה של `BiometricPrompt` עם `BIOMETRIC_WEAK | DEVICE_CREDENTIAL`, כלומר טביעת אצבע או זיהוי פנים, עם PIN / pattern / סיסמה כגיבוי. נבחר WEAK ולא STRONG, כי ברוב המכשירים זיהוי פנים מסווג כ-weak, והצירוף STRONG + DEVICE_CREDENTIAL לא נתמך לפני Android 11. האפליקציה מקבלת רק הצלחה או כשל, בלי שום מידע ביומטרי.
+  - **`requireConfirmation`**: בכניסה לאפליקציה (`LockScreen`) הערך הוא `false`. לכן אחרי זיהוי פנים תקין נכנסים מיד, בלי ללחוץ "אישור" (`setConfirmationRequired(false)`). זה רמז למערכת (Android 10 ומעלה), ויצרן רשאי להתעלם ממנו. בשינוי הגדרות הנעילה האישור **נשאר**, כי זו פעולה שמחלישה אבטחה ולכן נדרשת כוונה מפורשת.
 - **`AppLock`**: מחזיק את מצב הנעילה (`locked: StateFlow`) ונרשם ל-`ProcessLifecycleOwner`:
   - **בהפעלה:** נעולה, אם הנעילה פעילה.
   - **חזרה מהרקע:** ננעלת אם עבר הזמן שהוגדר (`RelockTimeout`: מיד / דקה / 5 דקות / רק בסגירה).
