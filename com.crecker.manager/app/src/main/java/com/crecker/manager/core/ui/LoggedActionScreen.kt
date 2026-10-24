@@ -243,7 +243,8 @@ fun LastRunLine(systemId: String, actionId: String, @StringRes label: Int? = nul
     }
     val status = stringResource(run.status.label)
     val time = formatDateTime(run.startedAt)
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    // יישור לראש השורה (אותו style לשניהם) – כשהטקסט נשבר לכמה שורות, הנקודה נשארת בגובה השורה הראשונה
+    Row(verticalAlignment = Alignment.Top) {
         Text("● ", color = LogColors.of(run.status), style = MaterialTheme.typography.bodySmall)
         Text(
             if (labelText == null) stringResource(R.string.last_run, status, time)
