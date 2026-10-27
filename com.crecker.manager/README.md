@@ -23,6 +23,8 @@
   gradlew :app:testDebugUnitTest    # בדיקות
   gradlew :app:lintDebug            # lint (שגיאה מכשילה את ה-build)
   ```
+- **JDK:** ה-daemon של Gradle רץ על JDK 25 מלא (`gradle/gradle-daemon-jvm.properties`), למשל ה-JBR של Android Studio. אם ה-build נכשל עם `jlink executable … does not exist`, Gradle ממשיך להשתמש ב-daemon שהופעל על JRE (למשל מתוך התוסף של Java ב-VS Code). הפתרון: `gradlew --stop` ואז לבנות שוב.
+- **עדכון גרסת Gradle:** בעדכון של `distributionUrl` ב-`gradle-wrapper.properties` צריך לעדכן גם את `distributionSha256Sum`. את הערך לוקחים מהקובץ `…-bin.zip.sha256` ב-services.gradle.org.
 - **התקנה על מכשיר משורת הפקודה:** `adb install -r -t app/build/outputs/apk/debug/app-debug.apk`. לא להתקין מ-`app/build/intermediates/`: שם נמצא ה-build של Android Studio, ו-`gradlew` לא מעדכן אותו.
 - **בדיקה על המכשיר:** צילומי מסך יוצאים שחורים (`FLAG_SECURE`). את מה שמוצג במסך קוראים עם `adb shell uiautomator dump`.
 - minSdk 26, Kotlin + Jetpack Compose (Material 3).

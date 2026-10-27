@@ -11,6 +11,8 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 .\gradlew.bat :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
 
+The Gradle daemon must run on a full JDK 25 (`gradle/gradle-daemon-jvm.properties`). If the build fails with `jlink executable … does not exist`, a daemon started on a JRE (e.g. the VS Code Java extension's) is being reused – run `.\gradlew.bat --stop` and build again with `JAVA_HOME` set as above. When bumping the wrapper's `distributionUrl`, update `distributionSha256Sum` too (from `…-bin.zip.sha256` on services.gradle.org).
+
 The built APK is `app/build/outputs/apk/debug/app-debug.apk` – install that one (`adb install -r -t …`). `app/build/intermediates/apk/debug/` is Android Studio's own build and is not updated by `gradlew`.
 
 **On-device testing** (the user's phone over wireless adb): screenshots are black because of `FLAG_SECURE`, so read the UI with `adb shell uiautomator dump` (text + bounds) and tap with `input tap`. A fresh install starts locked – the user unlocks. In Git Bash set `MSYS_NO_PATHCONV=1` before adb paths like `/sdcard/…`. Restore anything changed for a test (thresholds, app language) afterwards.
