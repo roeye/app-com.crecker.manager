@@ -5,4 +5,6 @@
 -->
 <full-backup-content>
     <exclude domain="file" path="datastore/" />
+    <!-- Cached mail headers (sender, subject) – private, and refetched from the server anyway -->
+    <exclude domain="file" path="mail-cache/" />
 </full-backup-content>

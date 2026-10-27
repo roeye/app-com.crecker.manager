@@ -15,3 +15,13 @@
 -dontwarn com.jcraft.jsch.**
 -dontwarn org.ietf.jgss.**
 -dontwarn org.apache.commons.net.**
+# JavaMail (IMAP) loads providers and data handlers by reflection
+-keep class com.sun.mail.** { *; }
+-keep class javax.mail.** { *; }
+-keep class javax.activation.** { *; }
+-keep class myjava.awt.datatransfer.** { *; }
+-dontwarn com.sun.mail.**
+-dontwarn javax.mail.**
+-dontwarn javax.activation.**
+-dontwarn java.awt.**
+-dontwarn java.beans.**

@@ -37,6 +37,8 @@ Lint must pass with no errors (it fails the build). Notably: in composables read
 - App settings screen: settings are grouped by category (Security first, then Display & language); each setting has an icon and opens a `ChoiceDialog`.
 - Icons: launcher icon is a vector adaptive icon (background / foreground / monochrome in `res/drawable`); notifications use `ic_notification` (single color). In-app logo: `AppLogo` / `LogoTitle`. Material icons come from `material-icons-extended`.
 - Home screen exits only on a double back press within 1 s (`DoubleBackToExit`).
+- Notifications: failures of scheduled runs are sent automatically (`Notifications.runProblem`). For "something new" (not a failure), actions call `Notifications.systemUpdate` with a fixed `tag` (replaces the previous one), normally only when `trigger == SCHEDULED`.
+- The `mail` system is **strictly read-only** on the server: folders open `READ_ONLY`, bodies via `BODY.PEEK`; never add flag changes, delete, move, append or expunge. HTML mail is shown in a WebView without JS, with network loads blocked until the user taps "Show", and links open only after confirmation.
 - Dependencies go through `gradle/libs.versions.toml` (the user sometimes bumps versions there themselves – keep their versions). R8 rules: `app/src/main/keepRules/rules.keep`.
 
 ## Documentation

@@ -69,6 +69,7 @@
 
     <!-- Notifications -->
     <string name="notif_channel_run_problems">Scheduled action failures</string>
+    <string name="notif_channel_updates">Updates from systems (e.g. new mail)</string>
 
     <!-- Log view -->
     <string name="log_title">Log</string>
@@ -140,6 +141,7 @@
 
     <!-- Categories -->
     <string name="category_sites">Sites</string>
+    <string name="category_communication">Communication</string>
 
     <!-- paisresults -->
     <string name="pais_description">Pais lottery results website.</string>
@@ -193,4 +195,104 @@
     <string name="pais_col_last_update">Last update (Israel time)</string>
     <string name="pais_col_elapsed">Elapsed</string>
     <string name="pais_col_status">Status</string>
+
+    <!-- mail -->
+    <string name="mail_description">All your mailboxes in one place – read-only. The app never changes anything on the server: messages stay unread there, nothing is moved or deleted.</string>
+    <string name="mail_inbox_title">Inbox</string>
+    <string name="mail_folder_inbox">Inbox</string>
+    <string name="mail_refresh">Refresh</string>
+    <string name="mail_filter_all">All</string>
+    <string name="mail_empty">No messages</string>
+    <string name="mail_no_accounts_hint">No mailboxes yet. Add them in the system settings (⚙ on the Mail screen).</string>
+    <string name="mail_no_accounts_short">No mailboxes yet – add them in the system settings</string>
+    <string name="mail_no_subject">(no subject)</string>
+    <string name="mail_unknown_sender">(unknown sender)</string>
+    <string name="mail_has_attachments">Has attachments</string>
+    <string name="mail_new_count">new: %1$d</string>
+    <string name="mail_unread_count">unread: %1$d</string>
+    <string name="mail_no_unread">no unread mail</string>
+    <string name="mail_status_not_checked">not checked yet</string>
+    <string name="mail_status_error">connection failed</string>
+
+    <!-- mail – message -->
+    <string name="mail_from">From</string>
+    <string name="mail_to">To</string>
+    <string name="mail_cc">Cc</string>
+    <string name="mail_date">Date</string>
+    <string name="mail_no_body">(empty message)</string>
+    <string name="mail_retry">Try again</string>
+    <string name="mail_message_gone">The message no longer exists on the server</string>
+    <string name="mail_remote_blocked">Remote images and content were blocked, so the sender can\'t tell that you opened this message.</string>
+    <string name="mail_show_remote">Show</string>
+    <string name="mail_open_link_title">Open link?</string>
+    <string name="mail_open">Open</string>
+    <string name="mail_no_app_for_link">No app can open this link</string>
+    <string name="mail_save_attachment">Save attachment</string>
+    <string name="mail_saved">Saved: %1$s</string>
+    <string name="mail_save_failed">Saving failed: %1$s</string>
+
+    <!-- mail – settings -->
+    <string name="mail_settings_title">Mailboxes</string>
+    <string name="mail_settings_hint">Read-only access over IMAP: messages stay unread on the server, and nothing is changed, moved or deleted.</string>
+    <string name="mail_no_accounts_add">No mailboxes yet. Tap \"Add mailbox\".</string>
+    <string name="mail_add_account">Add mailbox</string>
+    <string name="mail_new_account">New mailbox</string>
+    <string name="mail_edit_account">Edit mailbox</string>
+    <string name="mail_read_only_note">The app only reads messages (IMAP, read-only mode). On cPanel: the email address is the username, and the incoming server is usually mail.your-domain with SSL/TLS on port 993.</string>
+    <string name="mail_field_user">Email address / username</string>
+    <string name="mail_field_name">Display name (optional)</string>
+    <string name="mail_server_section">Incoming server (IMAP)</string>
+    <string name="mail_field_host">IMAP server</string>
+    <string name="mail_security_ssl">SSL/TLS</string>
+    <string name="mail_security_starttls">STARTTLS</string>
+    <string name="mail_folders">Folders</string>
+    <string name="mail_folders_hint">Only Inbox is shown by default. To add folders (e.g. Spam), load the folder list from the server.</string>
+    <string name="mail_load_folders">Load folders</string>
+    <string name="mail_folders_loaded">Folders found: %1$d</string>
+    <string name="mail_test_ok">Connected. %1$s – messages: %2$d, unread: %3$d</string>
+    <string name="mail_delete_account">Delete mailbox</string>
+    <string name="mail_delete_confirm">Delete %1$s from the app? Only its settings and the messages saved in the app are removed – nothing is deleted from the server.</string>
+    <string name="mail_delete">Delete</string>
+    <string name="mail_error_user">Enter the email address / username</string>
+    <string name="mail_error_host">Enter the IMAP server</string>
+    <string name="mail_error_password">Enter the password</string>
+    <string name="mail_error_no_folder">Select at least one folder</string>
+
+    <!-- mail – check for new mail -->
+    <string name="mail_check_title">Check for new mail</string>
+    <string name="mail_check_short">Mail check</string>
+    <string name="mail_check_description">Connects to every mailbox and checks for new messages. Can run automatically in the background and send one summary notification when new mail arrives. Read-only – nothing is changed on the server.</string>
+    <string name="mail_check_settings_title">Settings – check for new mail</string>
+    <string name="mail_accounts_in_system_settings">The mailboxes are in the system settings (⚙ on the Mail screen).</string>
+    <string name="mail_notifications_section">Notifications</string>
+    <string name="mail_notify_new">Notify about new mail</string>
+    <string name="mail_notify_new_hint">One summary notification for all mailboxes, only in automatic runs. You are notified about each message once.</string>
+    <string name="mail_log_no_accounts">No mailboxes – add them in the system settings (⚙ on the Mail screen)</string>
+    <string name="mail_log_start">Mailboxes to check: %1$d</string>
+    <string name="mail_log_folder_ok">✓ %1$s · %2$s – unread: %3$d, new: %4$d</string>
+    <string name="mail_log_new_message">✉ %1$s – %2$s</string>
+    <string name="mail_log_account_failed">✗ %1$s: %2$s</string>
+    <string name="mail_log_total_new">New messages: %1$d</string>
+    <string name="mail_log_no_new">No new messages</string>
+    <string name="mail_summary">Summary</string>
+    <string name="mail_col_account">Mailbox</string>
+    <string name="mail_col_folder">Folder</string>
+    <string name="mail_col_total">Messages</string>
+    <string name="mail_col_unread">Unread</string>
+    <string name="mail_col_new">New</string>
+    <plurals name="mail_notif_title">
+        <item quantity="one">%1$d new email</item>
+        <item quantity="other">%1$d new emails</item>
+    </plurals>
+
+    <!-- mail – errors -->
+    <string name="mail_err_login">Login failed – wrong email address or password</string>
+    <string name="mail_err_certificate">The server\'s security certificate is not valid for %1$s. On shared hosting, try the server\'s own hostname (shown in cPanel under the mail client settings).</string>
+    <string name="mail_err_unknown_host">Server %1$s not found</string>
+    <string name="mail_err_connect">Connection failed (%1$s)</string>
+    <string name="mail_err_folder">Cannot open folder %1$s (%2$s)</string>
+    <string name="mail_err_missing">Missing details: %1$s</string>
+    <string name="mail_err_no_password">No saved password for this mailbox</string>
+    <string name="mail_err_cache">Could not save the mail list on the device</string>
+    <string name="mail_err_save_target">Cannot write to the selected file</string>
 </resources>

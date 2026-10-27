@@ -43,7 +43,8 @@ com.crecker.manager/
 │   ├── remote/            RemoteUploader: FTP / FTPS / SFTP (העלאה + fileInfo)
 │   └── ui/                LoggedActionScreen, LogView, טפסי הגדרות (חיבור מרוחק, תזמון)
 └── systems/               מערכת = תיקייה
-    └── paisresults/
+    ├── paisresults/
+    └── mail/              תיבות דואר (IMAP, קריאה בלבד): ImapClient, MailParser, MailStore (מטמון)
 ```
 
 ## מושגים
@@ -62,7 +63,7 @@ com.crecker.manager/
   - `options`: UI מעל כפתור ההרצה (למשל צ'קבוקס).
   - `settingsScreen`: מסך ההגדרות של הפעולה (כפתור ⚙).
   - `schedulable`: אפשר להריץ אוטומטית ברקע.
-- **`Custom`**: מסך מותאם לחלוטין, לפעולות שלא מתאימות לתבנית של לוג.
+- **`Custom`**: מסך מותאם לחלוטין, לפעולות שלא מתאימות לתבנית של לוג (למשל תיבת הדואר ב-`mail`). אם צריך כמה מסכים, למשל רשימה ופריט, הניווט ביניהם נעשה בתוך המסך עצמו: state עם `rememberSaveable` ו-`BackHandler`.
 
 ### `ActionContext`, מה שפעולה מקבלת בריצה
 - `log`: `info` / `success` / `warn` / `error` / `table(...)`. מוצג חי ונשמר להיסטוריה.
@@ -87,7 +88,8 @@ JSON תחת `files/run-history/<system>__<action>/`. נשמרות 20 הרצות 
   - **`ActionSettings`** (`store.forAction(systemId, actionId)`): הגדרות של פעולה אחת, כמו תזמון, ספים ואפשרויות.
 - **העברת הגדרות:** כשהגדרה של פעולה הופכת למשותפת, המערכת מצהירה על `MoveToSystemSettings(systemId, actionId, keys)` ב-`settingsMigrations`. ההעברה רצה **פעם אחת, לפני הקריאה הראשונה** מה-DataStore (DataMigration), כך שאין מצב שבו פעולה, כולל מתוזמנת, קוראת לפני שההעברה הסתיימה. ערך שכבר קיים ברמת המערכת לא נדרס. סודות מועתקים מוצפנים כמו שהם, כי המפתח זהה.
 - סודות (`putSecret`/`getSecret`) מוצפנים ב-AES-256-GCM עם מפתח ב-Android Keystore.
-- קובץ ההגדרות **מוחרג מגיבוי** (`backup_rules.xml`, `data_extraction_rules.xml`), כי מפתח ה-Keystore לא עובר גיבוי ממילא.
+- קובץ ההגדרות **מוחרג מגיבוי** (`backup_rules.xml`, `data_extraction_rules.xml`), כי מפתח ה-Keystore לא עובר גיבוי ממילא. גם מטמון שיש בו מידע פרטי מוחרג, למשל `mail-cache/`.
+- **רשימות** (למשל כמה תיבות דואר): נשמרות כ-JSON במפתח אחד, ולכל פריט יש `id` קבוע. הסוד של כל פריט נשמר במפתח נפרד, למשל `password_<id>`.
 
 ### חיבור מרוחק (`core/remote`)
 - `RemoteUploader.create(config)` מחזיר FTP, FTPS (explicit TLS) או SFTP.
@@ -107,6 +109,11 @@ JSON תחת `files/run-history/<system>__<action>/`. נשמרות 20 הרצות 
 - `ScheduleSection` (טופס) ו-`ActionScheduler` (WorkManager periodic, מינימום 15 דקות, רק כשיש רשת).
 - `ScheduledActionWorker` מריץ את הפעולה דרך אותו `ActionRunner`, ושולח התראה אם ההרצה לא הצליחה במלואה (ניתן לכבות).
 - אנדרואיד עשוי לדחות הרצות (Doze), כך שזה לא תזמון מדויק לדקה.
+
+### התראות (`core/run/Notifications`)
+יש שני ערוצים:
+- **"כשלים בפעולות מתוזמנות"** (`runProblem`): נשלחת אוטומטית מ-`ScheduledActionWorker`. פעולה לא קוראת לזה בעצמה.
+- **"עדכונים מהמערכות"** (`systemUpdate(context, tag, title, text, details)`): פעולה שולחת התראה על משהו **חדש** שאינו תקלה, למשל מיילים חדשים. התראה עם אותו `tag` מחליפה את הקודמת במקום להצטבר. בדרך כלל שולחים אותה רק כש-`trigger == SCHEDULED`, כי בהרצה ידנית המשתמש כבר רואה את הלוג.
 
 ## איך מוסיפים מערכת חדשה
 

@@ -65,6 +65,7 @@
 
     <!-- Notifications -->
     <string name="notif_channel_run_problems">כשלים בפעולות מתוזמנות</string>
+    <string name="notif_channel_updates">עדכונים מהמערכות (למשל מיילים חדשים)</string>
 
     <!-- Log view -->
     <string name="log_title">לוג</string>
@@ -136,6 +137,7 @@
 
     <!-- Categories -->
     <string name="category_sites">אתרים</string>
+    <string name="category_communication">תקשורת</string>
 
     <!-- paisresults -->
     <string name="pais_description">אתר תוצאות הגרלות מפעל הפיס.</string>
@@ -189,4 +191,105 @@
     <string name="pais_col_last_update">עדכון אחרון (שעון ישראל)</string>
     <string name="pais_col_elapsed">זמן שחלף</string>
     <string name="pais_col_status">מצב</string>
+
+    <!-- mail -->
+    <string name="mail_description">כל תיבות הדואר במקום אחד – קריאה בלבד. האפליקציה לא משנה כלום בשרת: ההודעות נשארות שם כלא נקראו, ושום דבר לא מועבר או נמחק.</string>
+    <string name="mail_inbox_title">דואר נכנס</string>
+    <string name="mail_folder_inbox">דואר נכנס</string>
+    <string name="mail_refresh">רענון</string>
+    <string name="mail_filter_all">הכל</string>
+    <string name="mail_empty">אין הודעות</string>
+    <string name="mail_no_accounts_hint">עדיין אין תיבות דואר. מוסיפים אותן בהגדרות המערכת (⚙ במסך Mail).</string>
+    <string name="mail_no_accounts_short">עדיין אין תיבות דואר – מוסיפים בהגדרות המערכת</string>
+    <string name="mail_no_subject">(ללא נושא)</string>
+    <string name="mail_unknown_sender">(שולח לא ידוע)</string>
+    <string name="mail_has_attachments">יש קבצים מצורפים</string>
+    <string name="mail_new_count">חדשים: %1$d</string>
+    <string name="mail_unread_count">לא נקראו: %1$d</string>
+    <string name="mail_no_unread">אין דואר שלא נקרא</string>
+    <string name="mail_status_not_checked">עוד לא נבדק</string>
+    <string name="mail_status_error">החיבור נכשל</string>
+
+    <!-- mail – message -->
+    <string name="mail_from">מאת</string>
+    <string name="mail_to">אל</string>
+    <string name="mail_cc">עותק</string>
+    <string name="mail_date">תאריך</string>
+    <string name="mail_no_body">(הודעה ריקה)</string>
+    <string name="mail_retry">נסה שוב</string>
+    <string name="mail_message_gone">ההודעה כבר לא קיימת בשרת</string>
+    <string name="mail_remote_blocked">תמונות ותוכן חיצוני נחסמו, כך שהשולח לא יכול לדעת שפתחת את ההודעה.</string>
+    <string name="mail_show_remote">הצג</string>
+    <string name="mail_open_link_title">לפתוח את הקישור?</string>
+    <string name="mail_open">פתח</string>
+    <string name="mail_no_app_for_link">אין אפליקציה שיכולה לפתוח את הקישור</string>
+    <string name="mail_save_attachment">שמירת קובץ מצורף</string>
+    <string name="mail_saved">נשמר: %1$s</string>
+    <string name="mail_save_failed">השמירה נכשלה: %1$s</string>
+
+    <!-- mail – settings -->
+    <string name="mail_settings_title">תיבות דואר</string>
+    <string name="mail_settings_hint">גישה לקריאה בלבד דרך IMAP: ההודעות נשארות בשרת כלא נקראו, ושום דבר לא משתנה, מועבר או נמחק.</string>
+    <string name="mail_no_accounts_add">עדיין אין תיבות דואר. לחץ על \"הוספת תיבה\".</string>
+    <string name="mail_add_account">הוספת תיבה</string>
+    <string name="mail_new_account">תיבת דואר חדשה</string>
+    <string name="mail_edit_account">עריכת תיבת דואר</string>
+    <string name="mail_read_only_note">האפליקציה רק קוראת הודעות (IMAP במצב קריאה בלבד). ב-cPanel: שם המשתמש הוא כתובת המייל, והשרת הנכנס הוא בדרך כלל mail.הדומיין-שלך עם SSL/TLS בפורט 993.</string>
+    <string name="mail_field_user">כתובת מייל / שם משתמש</string>
+    <string name="mail_field_name">שם לתצוגה (לא חובה)</string>
+    <string name="mail_server_section">שרת דואר נכנס (IMAP)</string>
+    <string name="mail_field_host">שרת IMAP</string>
+    <string name="mail_security_ssl">SSL/TLS</string>
+    <string name="mail_security_starttls">STARTTLS</string>
+    <string name="mail_folders">תיקיות</string>
+    <string name="mail_folders_hint">כברירת מחדל מוצג רק דואר נכנס. כדי להוסיף תיקיות (למשל Spam), טען את רשימת התיקיות מהשרת.</string>
+    <string name="mail_load_folders">טעינת תיקיות</string>
+    <string name="mail_folders_loaded">נמצאו תיקיות: %1$d</string>
+    <string name="mail_test_ok">מחובר. %1$s – הודעות: %2$d, לא נקראו: %3$d</string>
+    <string name="mail_delete_account">מחיקת התיבה</string>
+    <string name="mail_delete_confirm">למחוק את %1$s מהאפליקציה? נמחקות רק ההגדרות שלה וההודעות שנשמרו באפליקציה – שום דבר לא נמחק מהשרת.</string>
+    <string name="mail_delete">מחק</string>
+    <string name="mail_error_user">יש להזין כתובת מייל / שם משתמש</string>
+    <string name="mail_error_host">יש להזין שרת IMAP</string>
+    <string name="mail_error_password">יש להזין סיסמה</string>
+    <string name="mail_error_no_folder">יש לבחור לפחות תיקייה אחת</string>
+
+    <!-- mail – check for new mail -->
+    <string name="mail_check_title">בדיקת מיילים חדשים</string>
+    <string name="mail_check_short">בדיקת מיילים</string>
+    <string name="mail_check_description">מתחבר לכל תיבות הדואר ובודק אם הגיעו הודעות חדשות. אפשר להריץ אוטומטית ברקע ולקבל התראה אחת שמסכמת כשמגיע דואר חדש. קריאה בלבד – שום דבר לא משתנה בשרת.</string>
+    <string name="mail_check_settings_title">הגדרות – בדיקת מיילים חדשים</string>
+    <string name="mail_accounts_in_system_settings">תיבות הדואר מוגדרות בהגדרות המערכת (⚙ במסך Mail).</string>
+    <string name="mail_notifications_section">התראות</string>
+    <string name="mail_notify_new">התראה על מיילים חדשים</string>
+    <string name="mail_notify_new_hint">התראה אחת שמסכמת את כל התיבות, רק בהרצה אוטומטית. על כל הודעה מקבלים התראה פעם אחת.</string>
+    <string name="mail_log_no_accounts">אין תיבות דואר – מוסיפים אותן בהגדרות המערכת (⚙ במסך Mail)</string>
+    <string name="mail_log_start">תיבות לבדיקה: %1$d</string>
+    <string name="mail_log_folder_ok">✓ %1$s · %2$s – לא נקראו: %3$d, חדשים: %4$d</string>
+    <string name="mail_log_new_message">✉ %1$s – %2$s</string>
+    <string name="mail_log_account_failed">✗ %1$s: %2$s</string>
+    <string name="mail_log_total_new">הודעות חדשות: %1$d</string>
+    <string name="mail_log_no_new">אין הודעות חדשות</string>
+    <string name="mail_summary">סיכום</string>
+    <string name="mail_col_account">תיבה</string>
+    <string name="mail_col_folder">תיקייה</string>
+    <string name="mail_col_total">הודעות</string>
+    <string name="mail_col_unread">לא נקראו</string>
+    <string name="mail_col_new">חדשים</string>
+    <plurals name="mail_notif_title">
+        <item quantity="one">מייל חדש אחד</item>
+        <item quantity="two">%1$d מיילים חדשים</item>
+        <item quantity="other">%1$d מיילים חדשים</item>
+    </plurals>
+
+    <!-- mail – errors -->
+    <string name="mail_err_login">ההתחברות נכשלה – כתובת מייל או סיסמה שגויים</string>
+    <string name="mail_err_certificate">תעודת האבטחה של השרת לא תקפה עבור %1$s. באחסון משותף נסה את שם השרת עצמו (מופיע ב-cPanel בהגדרות תוכנת הדואר).</string>
+    <string name="mail_err_unknown_host">השרת %1$s לא נמצא</string>
+    <string name="mail_err_connect">ההתחברות נכשלה (%1$s)</string>
+    <string name="mail_err_folder">לא ניתן לפתוח את התיקייה %1$s (%2$s)</string>
+    <string name="mail_err_missing">חסרים פרטים: %1$s</string>
+    <string name="mail_err_no_password">אין סיסמה שמורה לתיבה הזו</string>
+    <string name="mail_err_cache">לא ניתן לשמור את רשימת המיילים במכשיר</string>
+    <string name="mail_err_save_target">לא ניתן לכתוב לקובץ שנבחר</string>
 </resources>

@@ -34,6 +34,12 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            // android-mail ו-android-activation כוללים את אותם קבצי רישיון
+            excludes += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md")
+        }
+    }
 }
 
 dependencies {
@@ -56,6 +62,8 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.commons.net)
     implementation(libs.jsch)
+    implementation(libs.android.mail)
+    implementation(libs.android.activation)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
