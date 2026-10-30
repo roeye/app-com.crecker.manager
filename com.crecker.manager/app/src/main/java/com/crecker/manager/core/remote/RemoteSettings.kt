@@ -1,5 +1,7 @@
 package com.crecker.manager.core.remote
 
+import com.crecker.manager.R
+import com.crecker.manager.core.model.ActionContext
 import com.crecker.manager.core.settings.ScopedSettings
 
 /** מפתחות ההגדרות של חיבור מרוחק (ברמת מערכת או פעולה) – מי ששומר אותם מקבל את הטופס הגנרי ב-core/ui. */
@@ -23,4 +25,16 @@ object RemoteSettings {
         password = settings.getSecret(PASSWORD).orEmpty(),
         remoteDir = settings.getString(DIR)?.takeIf { it.isNotBlank() } ?: defaultDir,
     )
+}
+
+/**
+ * פרטי החיבור לשרת מהגדרות **המערכת** ([ActionContext.systemSettings]).
+ * אם חסרים פרטים – רושם שגיאה שמפנה להגדרות של [systemName] ומחזיר null.
+ */
+suspend fun ActionContext.loadSystemRemote(systemName: String, defaultDir: String): RemoteConfig? {
+    val remote = RemoteSettings.load(systemSettings, defaultDir)
+    val missing = remote.missingFields()
+    if (missing.isEmpty()) return remote
+    log.error(getString(R.string.remote_log_missing_settings, systemName, missing.joinToString { getString(it) }))
+    return null
 }

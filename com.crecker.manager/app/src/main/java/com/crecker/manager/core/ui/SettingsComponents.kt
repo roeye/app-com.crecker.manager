@@ -68,6 +68,7 @@ import com.crecker.manager.core.run.ScheduleKeys
 import com.crecker.manager.core.model.describe
 import com.crecker.manager.core.settings.ActionSettings
 import com.crecker.manager.core.settings.ScopedSettings
+import com.crecker.manager.core.settings.SystemSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -182,6 +183,32 @@ class RemoteFormState(private val settings: ScopedSettings, private val defaultD
         password = password.ifEmpty { settings.getSecret(RemoteSettings.PASSWORD).orEmpty() },
         remoteDir = remoteDir.trim().ifBlank { defaultDir },
     )
+}
+
+/** מסך הגדרות מערכת שכולל רק את פרטי החיבור לשרת – משותפים לכל הפעולות של [systemName]. */
+@Composable
+fun RemoteSystemSettingsScreen(systemName: String, settings: SystemSettings, defaultDir: String, onBack: () -> Unit) {
+    val remote = rememberRemoteFormState(settings, defaultDir)
+    SettingsScaffold(
+        title = stringResource(R.string.remote_system_settings_title, systemName),
+        loaded = remote.loaded,
+        onBack = onBack,
+        onSave = { remote.validationError() ?: run { remote.save(); null } },
+    ) {
+        HintText(stringResource(R.string.remote_system_settings_hint, systemName))
+        RemoteSettingsSection(remote)
+    }
+}
+
+/** הערה במסכי ההגדרות של הפעולות: פרטי החיבור נמצאים בהגדרות המערכת [systemName]. */
+@Composable
+fun RemoteInSystemSettingsNote(systemName: String) {
+    HintText(stringResource(R.string.remote_in_system_settings, systemName))
+}
+
+@Composable
+private fun HintText(text: String) {
+    Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable

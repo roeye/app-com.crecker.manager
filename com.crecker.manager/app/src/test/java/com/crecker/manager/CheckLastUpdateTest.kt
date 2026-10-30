@@ -3,11 +3,11 @@ package com.crecker.manager
 import com.crecker.manager.core.model.RunStatus
 import com.crecker.manager.core.model.elapsedParts
 import com.crecker.manager.core.remote.RemoteFileInfo
-import com.crecker.manager.systems.paisresults.Freshness
-import com.crecker.manager.systems.paisresults.PaisResultsSystem
+import com.crecker.manager.core.remote.Freshness
+import com.crecker.manager.core.model.ISRAEL_ZONE
 import com.crecker.manager.core.model.formatDateTime
-import com.crecker.manager.systems.paisresults.freshnessOf
-import com.crecker.manager.systems.paisresults.overallStatus
+import com.crecker.manager.core.remote.freshnessOf
+import com.crecker.manager.core.remote.overallStatus
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Duration
@@ -68,7 +68,7 @@ class CheckLastUpdateTest {
     @Test
     fun israelTimeIncludesDaylightSaving() {
         // קיץ: UTC+3, חורף: UTC+2
-        assertEquals("01/07/2026 15:00:00", formatDateTime(Instant.parse("2026-07-01T12:00:00Z"), PaisResultsSystem.ISRAEL_ZONE))
-        assertEquals("01/12/2026 14:00:00", formatDateTime(Instant.parse("2026-12-01T12:00:00Z"), PaisResultsSystem.ISRAEL_ZONE))
+        assertEquals("01/07/2026 15:00:00", formatDateTime(Instant.parse("2026-07-01T12:00:00Z"), ISRAEL_ZONE))
+        assertEquals("01/12/2026 14:00:00", formatDateTime(Instant.parse("2026-12-01T12:00:00Z"), ISRAEL_ZONE))
     }
 }

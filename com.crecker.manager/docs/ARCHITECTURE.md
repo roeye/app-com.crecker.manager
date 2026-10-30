@@ -33,17 +33,20 @@ com.crecker.manager/
 │   └── AppNavHost.kt      ניווט
 ├── core/                  תשתית משותפת – לא תלויה באף מערכת
 │   ├── model/             ManagedSystem, SystemAction, RunModels (לוג, סטטוס, ActionContext),
-│   │                      TimeFormat (תאריך לפי אזור זמן, "לפני X")
+│   │                      TimeFormat (תאריך לפי אזור זמן, ISRAEL_ZONE, "לפני X"), SizeFormat
 │   ├── run/               ActionRunner, RunHistory, ActionScheduler (+Worker), Notifications
 │   ├── security/          AppLock (מצב נעילה), DeviceAuth (BiometricPrompt)
 │   ├── settings/          SettingsStore, SystemSettings/ActionSettings (DataStore), MoveToSystemSettings,
 │   │                      SecretCipher (Keystore),
 │   │                      AppPreferences / ThemeMode / AppLanguage, Context.localized()
 │   ├── net/               HttpFetcher
-│   ├── remote/            RemoteUploader: FTP / FTPS / SFTP (העלאה + fileInfo)
-│   └── ui/                LoggedActionScreen, LogView, טפסי הגדרות (חיבור מרוחק, תזמון)
+│   ├── remote/            RemoteUploader: FTP / FTPS / SFTP (העלאה + fileInfo), loadSystemRemote,
+│   │                      LastUpdateCheck (פעולה גנרית: "בדיקת עדכון אחרון" של קבצים בשרת)
+│   └── ui/                LoggedActionScreen, LogView, טפסי הגדרות (חיבור מרוחק, תזמון),
+│                          RemoteSystemSettingsScreen (מסך הגדרות מערכת עם חיבור לשרת בלבד)
 └── systems/               מערכת = תיקייה
-    ├── paisresults/
+    ├── paisresults/       cron data retrieval + בדיקת עדכון אחרון
+    ├── flightstatus/      בדיקת עדכון אחרון (קובץ אחד)
     └── mail/              תיבות דואר (IMAP, קריאה בלבד): ImapClient, MailParser, MailStore (מטמון)
 ```
 
@@ -99,10 +102,32 @@ JSON תחת `files/run-history/<system>__<action>/`. נשמרות 20 הרצות 
 - FTP במצב passive ובינארי. Timeout של 30 שניות.
 - SFTP: מפתח השרת **לא נבדק** (`StrictHostKeyChecking=no`). לשיפור בעתיד: לשמור את טביעת האצבע בחיבור הראשון ולוודא אותה בהמשך (TOFU).
 - טופס גנרי `RemoteSettingsSection` כולל בחירת פרוטוקול, פורט (ריק = ברירת מחדל), סיסמה מוצפנת ו**בדיקת חיבור**. הוא עובד גם עם `SystemSettings` וגם עם `ActionSettings`. אם כמה פעולות מתחברות לאותו שרת, ההגדרות שייכות למערכת.
+- **`RemoteSystemSettingsScreen(systemName, settings, defaultDir, onBack)`**: מסך הגדרות מערכת מוכן שכולל רק את החיבור לשרת. משמש את המערכות של האתרים (`ManagedSystem.settingsScreen`). לכל מערכת יש חיבור משלה, כי ההגדרות נשמרות עם prefix של ה-`systemId`.
+- **`ActionContext.loadSystemRemote(systemName, defaultDir)`**: טוען את החיבור מהגדרות המערכת. אם חסרים פרטים, רושם בלוג שגיאה שמפנה ל-⚙ של המערכת ומחזיר `null`, והפעולה מחזירה `FAILED`.
+- **`RemoteInSystemSettingsNote(systemName)`**: הערה במסך ההגדרות של פעולה: "פרטי החיבור נמצאים בהגדרות המערכת".
+
+### פעולה גנרית: בדיקת עדכון אחרון (`core/remote/LastUpdateCheck`)
+פעולת `Logged` מוכנה (`id = check_last_update`, אפשר לתזמן) שבודקת ב-`fileInfo` מתי כל קובץ ברשימה עודכן בשרת. היא מציגה את הזמן לפי שעון ישראל ואת הזמן שחלף, ומסמנת כ**ישן** קובץ שלא עודכן יותר מהסף. הסטטוס: הכל עדכני = הצלחה, יש קובץ ישן = הצלחה חלקית, חסר / שגיאה / כשל בחיבור = נכשל.
+
+```kotlin
+private val checkLastUpdate = LastUpdateCheck(
+    description = R.string.my_check_description,  // התיאור של הפעולה במערכת הזו
+    systemName = NAME,                            // const – ראו למטה
+    defaultRemoteDir = DEFAULT_REMOTE_DIR,
+    files = listOf("data.json"),
+    defaultStaleHours = 1,
+)
+override val actions = listOf(checkLastUpdate.action)
+```
+
+- הכותרת, ההגדרות (סף בשעות 1–8760 במפתח `stale_hours`, תזמון והתראה בכשל) והלוג משותפים לכל המערכות. רק התיאור, רשימת הקבצים וברירת המחדל של הסף שונים.
+- אם יש קובץ אחד בלבד, לא מוצגת שורת "הקובץ הישן ביותר".
+- את שם המערכת מעבירים כ-`const val NAME`, ולא כ-`name`. הפעולה נוצרת בזמן האתחול של ה-`object` של המערכת, ו-`const` נקבע כבר בזמן הקומפילציה.
+- בשימוש היום ב-[paisresults](systems/paisresults.md) וב-[flightstatus](systems/flightstatus.md).
 
 ### זמנים
 `core/model/TimeFormat.kt`:
-- `formatDateTime(instant, zone)`: `dd/MM/yyyy HH:mm:ss` באזור זמן נתון (למשל `Asia/Jerusalem`, כולל שעון קיץ).
+- `formatDateTime(instant, zone)`: `dd/MM/yyyy HH:mm:ss` באזור זמן נתון. לשעון ישראל יש קבוע: `ISRAEL_ZONE` (`Asia/Jerusalem`, כולל שעון קיץ).
 - `formatElapsed(context, from, now)`: "לפני 2 ימ׳ 3 שע׳". מוצגות עד שתי היחידות הגדולות. מתחת לדקה: "לפני פחות מדקה". זמן עתידי (הפרש שעונים בין שרת למכשיר): "… בעתיד".
 
 ### תזמון
@@ -146,7 +171,7 @@ object MyAction {
 }
 ```
 
-מסכי ההגדרות נבנים מהרכיבים הקיימים. חיבור לשרת הוא בדרך כלל הגדרה **של המערכת** (`ManagedSystem.settingsScreen`):
+מסכי ההגדרות נבנים מהרכיבים הקיימים. חיבור לשרת הוא בדרך כלל הגדרה **של המערכת** (`ManagedSystem.settingsScreen`). אם זה כל מה שיש במסך, משתמשים ב-`RemoteSystemSettingsScreen(NAME, settings, DEFAULT_REMOTE_DIR, onBack)`. אם יש גם שדות נוספים, בונים את המסך בעצמכם:
 
 ```kotlin
 val remote = rememberRemoteFormState(systemSettings, defaultDir = "/path")
@@ -166,7 +191,7 @@ SettingsScaffold(title, loaded = schedule.loaded, onBack,
 }
 ```
 
-ובזמן ריצה: `RemoteSettings.load(systemSettings, defaultDir)` ואז `RemoteUploader.create(config)`.
+ובזמן ריצה: `loadSystemRemote(NAME, defaultDir) ?: return RunStatus.FAILED` (או `RemoteSettings.load(settings, defaultDir)` לחיבור ברמת הפעולה), ואז `RemoteUploader.create(config)`.
 
 ## כללים
 

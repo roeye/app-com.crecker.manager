@@ -1,6 +1,7 @@
 package com.crecker.manager.app
 
 import com.crecker.manager.core.model.ManagedSystem
+import com.crecker.manager.systems.flightstatus.FlightStatusSystem
 import com.crecker.manager.systems.mail.MailSystem
 import com.crecker.manager.systems.paisresults.PaisResultsSystem
 
@@ -8,6 +9,7 @@ import com.crecker.manager.systems.paisresults.PaisResultsSystem
 object SystemRegistry {
     val systems: List<ManagedSystem> = listOf(
         PaisResultsSystem,
+        FlightStatusSystem,
         MailSystem,
     )
 

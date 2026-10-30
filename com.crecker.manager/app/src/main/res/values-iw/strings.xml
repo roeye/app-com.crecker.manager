@@ -135,22 +135,58 @@
     <string name="remote_err_dir">לא ניתן ליצור/לגשת לתיקייה %1$s (%2$s)</string>
     <string name="remote_err_file_info">לא ניתן לקרוא את פרטי הקובץ %1$s (%2$s)</string>
 
+    <!-- Remote – system-level connection settings -->
+    <string name="remote_system_settings_title">הגדרות – %1$s</string>
+    <string name="remote_system_settings_hint">ההגדרות האלה משותפות לכל הפעולות של %1$s.</string>
+    <string name="remote_in_system_settings">פרטי החיבור לשרת נמצאים בהגדרות המערכת (⚙ במסך %1$s), והם משותפים לכל הפעולות.</string>
+    <string name="remote_log_missing_settings">חסרים פרטי חיבור בהגדרות המערכת (⚙ במסך %1$s): %2$s</string>
+    <string name="remote_log_connected">מחובר לשרת</string>
+
+    <!-- Log summary tables -->
+    <string name="log_summary">סיכום</string>
+    <string name="log_col_file">קובץ</string>
+    <string name="log_col_size">גודל</string>
+
+    <!-- Check last update (generic action, core/remote/LastUpdateCheck) -->
+    <string name="last_update_short">בדיקת עדכון</string>
+    <string name="last_update_title">בדיקת עדכון אחרון</string>
+    <string name="last_update_settings_title">הגדרות – בדיקת עדכון אחרון</string>
+    <string name="last_update_section">קבצים ישנים</string>
+    <string name="last_update_stale_hours">סימון קובץ כישן אחרי (שעות)</string>
+    <string name="last_update_stale_hours_hint">ברירת מחדל: %1$d. טווח: 1–%2$d. קובץ ישן הופך את ההרצה להצלחה חלקית, והרצה מתוזמנת שולחת התראה.</string>
+    <string name="last_update_error_hours">מספר שעות לא תקין</string>
+    <plurals name="last_update_log_start">
+        <item quantity="one">בודק קובץ אחד ב-%2$s (%3$s)</item>
+        <item quantity="two">בודק %1$d קבצים ב-%2$s (%3$s)</item>
+        <item quantity="other">בודק %1$d קבצים ב-%2$s (%3$s)</item>
+    </plurals>
+    <plurals name="last_update_log_threshold">
+        <item quantity="one">ישן אחרי שעה אחת</item>
+        <item quantity="two">ישן אחרי שעתיים</item>
+        <item quantity="other">ישן אחרי %1$d שעות</item>
+    </plurals>
+    <string name="last_update_log_missing">✗ %1$s: לא נמצא בשרת</string>
+    <string name="last_update_log_stale">⚠ %1$s – %2$s – לא עודכן בטווח הסף</string>
+    <string name="last_update_log_counts">%1$d עדכניים, %2$d ישנים, %3$d חסרים או נכשלו</string>
+    <string name="last_update_log_oldest">הקובץ הישן ביותר: %1$s – %2$s</string>
+    <string name="last_update_stale">ישן</string>
+    <string name="last_update_not_found">לא נמצא</string>
+    <string name="last_update_col_last_update">עדכון אחרון (שעון ישראל)</string>
+    <string name="last_update_col_elapsed">זמן שחלף</string>
+    <string name="last_update_col_status">מצב</string>
+
     <!-- Categories -->
     <string name="category_sites">אתרים</string>
     <string name="category_communication">תקשורת</string>
 
     <!-- paisresults -->
     <string name="pais_description">אתר תוצאות הגרלות מפעל הפיס.</string>
-    <string name="pais_system_settings_title">הגדרות – paisresults.co.il</string>
-    <string name="pais_system_settings_hint">ההגדרות האלה משותפות לכל הפעולות של paisresults.co.il.</string>
-    <string name="pais_remote_in_system_settings">פרטי החיבור לשרת נמצאים בהגדרות המערכת (⚙ במסך paisresults.co.il), והם משותפים לכל הפעולות.</string>
     <string name="pais_cron_short">משיכת נתונים</string>
     <string name="pais_cron_title">ביצוע cron data retrieval</string>
     <string name="pais_cron_description">הפעולה מקבלת את המידע של הגרלות הפיס (10 קבצים: 5 קבצי מידע + 5 קבצי זמני הגרלה הבאה)</string>
     <string name="pais_settings_title">הגדרות – cron data retrieval</string>
     <string name="pais_only_if_all_valid">העלה קבצים רק אם כל הקבצים תקינים</string>
     <string name="pais_only_if_all_valid_hint">תקין = HTTP 200, מעל 1KB (קבצי nextraffle: מעל 50 בתים) ותוכן צפוי</string>
-    <string name="pais_log_missing_settings">חסרים פרטי חיבור בהגדרות המערכת (⚙ במסך paisresults.co.il): %1$s</string>
     <string name="pais_log_step_download">שלב 1/2 – הורדת %1$d קבצים מ-pais.co.il</string>
     <string name="pais_log_all_valid">כל %1$d הקבצים ירדו תקינים</string>
     <string name="pais_log_some_invalid">%1$d מתוך %2$d קבצים תקינים, %3$d נכשלו</string>
@@ -159,13 +195,9 @@
     <string name="pais_log_skip_invalid">קבצים שנכשלו לא יועלו – הגרסה הקודמת שלהם נשארת בשרת</string>
     <string name="pais_log_step_upload">שלב 2/2 – העלאה אל %1$s</string>
     <string name="pais_log_retry">%1$s: %2$s – ניסיון חוזר (%3$d/%4$d)</string>
-    <string name="pais_log_connected">מחובר לשרת</string>
     <string name="pais_log_dir_created">התיקייה %1$s לא הייתה קיימת ונוצרה</string>
     <string name="pais_log_upload_failed">✗ העלאת %1$s נכשלה: %2$s</string>
     <string name="pais_no_connection">אין חיבור</string>
-    <string name="pais_summary">סיכום</string>
-    <string name="pais_col_file">קובץ</string>
-    <string name="pais_col_size">גודל</string>
     <string name="pais_col_download">הורדה</string>
     <string name="pais_col_upload">העלאה</string>
     <string name="pais_invalid_http">HTTP %1$d</string>
@@ -173,24 +205,11 @@
     <string name="pais_invalid_marker">התוכן לא מכיל \'%1$s\' – כנראה התקבל דף שגיאה</string>
 
     <!-- paisresults – check last update -->
-    <string name="pais_check_short">בדיקת עדכון</string>
-    <string name="pais_check_title">בדיקת עדכון אחרון</string>
     <string name="pais_check_description">מציגה מתי כל אחד מ-10 הקבצים בשרת עודכן לאחרונה (לפי שעון ישראל), וכמה זמן עבר מאז. קובץ שלא עודכן יותר מהסף מסומן כישן.</string>
-    <string name="pais_check_settings_title">הגדרות – בדיקת עדכון אחרון</string>
-    <string name="pais_check_section">קבצים ישנים</string>
-    <string name="pais_check_stale_hours">סימון קובץ כישן אחרי (שעות)</string>
-    <string name="pais_check_stale_hours_hint">ברירת מחדל: %1$d. טווח: 1–%2$d. קובץ ישן הופך את ההרצה להצלחה חלקית, והרצה מתוזמנת שולחת התראה.</string>
-    <string name="pais_check_error_hours">מספר שעות לא תקין</string>
-    <string name="pais_check_log_start">בודק %1$d קבצים ב-%2$s (ישן אחרי %3$d שעות)</string>
-    <string name="pais_check_log_missing">✗ %1$s: לא נמצא בשרת</string>
-    <string name="pais_check_log_stale">⚠ %1$s – %2$s – לא עודכן בטווח הסף</string>
-    <string name="pais_check_log_counts">%1$d עדכניים, %2$d ישנים, %3$d חסרים או נכשלו</string>
-    <string name="pais_check_log_oldest">הקובץ הישן ביותר: %1$s – %2$s</string>
-    <string name="pais_check_stale">ישן</string>
-    <string name="pais_check_not_found">לא נמצא</string>
-    <string name="pais_col_last_update">עדכון אחרון (שעון ישראל)</string>
-    <string name="pais_col_elapsed">זמן שחלף</string>
-    <string name="pais_col_status">מצב</string>
+
+    <!-- flightstatus -->
+    <string name="flight_description">אתר מצב טיסות.</string>
+    <string name="flight_check_description">מציגה מתי הקובץ flights_data.json בשרת עודכן לאחרונה (לפי שעון ישראל), וכמה זמן עבר מאז. אם הוא לא עודכן יותר מהסף, הוא מסומן כישן.</string>
 
     <!-- mail -->
     <string name="mail_description">כל תיבות הדואר במקום אחד – קריאה בלבד. האפליקציה לא משנה כלום בשרת: ההודעות נשארות שם כלא נקראו, ושום דבר לא מועבר או נמחק.</string>

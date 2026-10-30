@@ -22,10 +22,13 @@ import com.crecker.manager.core.model.ActionContext
 import com.crecker.manager.core.model.RunStatus
 import com.crecker.manager.core.model.SystemAction
 import com.crecker.manager.core.model.describe
+import com.crecker.manager.core.model.formatSize
 import com.crecker.manager.core.net.HttpFetcher
 import com.crecker.manager.core.remote.RemoteConfig
 import com.crecker.manager.core.remote.RemoteUploader
+import com.crecker.manager.core.remote.loadSystemRemote
 import com.crecker.manager.core.settings.ActionSettings
+import com.crecker.manager.core.ui.RemoteInSystemSettingsNote
 import com.crecker.manager.core.ui.ScheduleSection
 import com.crecker.manager.core.ui.SettingsScaffold
 import com.crecker.manager.core.ui.rememberScheduleFormState
@@ -64,7 +67,7 @@ object CronDataRetrieval {
     }
 
     private suspend fun ActionContext.execute(): RunStatus {
-        val remote = loadPaisRemote() ?: return RunStatus.FAILED
+        val remote = loadSystemRemote(PaisResultsSystem.NAME, PaisResultsSystem.DEFAULT_REMOTE_DIR) ?: return RunStatus.FAILED
         val onlyIfAllValid = settings.getBoolean(KEY_ONLY_IF_ALL_VALID, false)
 
         // שלב 1 – הורדה
@@ -100,10 +103,10 @@ object CronDataRetrieval {
         }
 
         log.table(
-            title = getString(R.string.pais_summary),
+            title = getString(R.string.log_summary),
             headers = listOf(
-                getString(R.string.pais_col_file),
-                getString(R.string.pais_col_size),
+                getString(R.string.log_col_file),
+                getString(R.string.log_col_size),
                 getString(R.string.pais_col_download),
                 getString(R.string.pais_col_upload),
             ),
@@ -164,7 +167,7 @@ object CronDataRetrieval {
         try {
             RemoteUploader.create(remote).use { uploader ->
                 runInterruptible { uploader.connect() }
-                log.success(getString(R.string.pais_log_connected))
+                log.success(getString(R.string.remote_log_connected))
                 val created = runInterruptible { uploader.ensureDir(remote.remoteDir) }
                 if (created) log.info(getString(R.string.pais_log_dir_created, remote.remoteDir))
                 for (d in files) {
@@ -227,7 +230,7 @@ private fun CronSettingsScreen(settings: ActionSettings, onBack: () -> Unit) {
             null
         },
     ) {
-        RemoteInSystemSettingsNote()
+        RemoteInSystemSettingsNote(PaisResultsSystem.NAME)
         ScheduleSection(schedule)
     }
 }

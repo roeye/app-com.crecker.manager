@@ -8,6 +8,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+/** שעון ישראל (כולל מעבר אוטומטי לשעון קיץ) – האתרים מציגים זמנים לפיו. */
+val ISRAEL_ZONE: ZoneId = ZoneId.of("Asia/Jerusalem")
+
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.US)
 
 /** תאריך ושעה באזור הזמן [zone] (למשל `Asia/Jerusalem` – כולל שעון קיץ). */
