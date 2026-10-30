@@ -17,7 +17,9 @@ The built APK is `app/build/outputs/apk/debug/app-debug.apk` – install that on
 
 **On-device testing** (the user's phone over wireless adb): screenshots are black because of `FLAG_SECURE`, so read the UI with `adb shell uiautomator dump` (text + bounds) and tap with `input tap`. A fresh install starts locked – the user unlocks. In Git Bash set `MSYS_NO_PATHCONV=1` before adb paths like `/sdcard/…`. Restore anything changed for a test (thresholds, app language) afterwards.
 
-Lint must pass with no errors (it fails the build). Notably: in composables read strings via `stringResource` / `LocalResources.current`, never `LocalContext.current.getString` (`LocalContextGetResourceValueCall`).
+Actions that do real work on the live sites (e.g. `flightstatus/cron_data_retrieval` runs the production cron script; `paisresults/cron_data_retrieval` uploads files) – ask the user before running them on the device. Read-only actions (`check_last_update`, mail) are fine to run.
+
+Lint must pass with no errors (it fails the build). Notably: in composables read strings via `stringResource` / `LocalResources.current`, never `LocalContext.current.getString` (`LocalContextGetResourceValueCall`). Never put a literal BOM (U+FEFF) in source – write `Char(0xFEFF)` (`ByteOrderMark`). Before adding a string resource, grep that the name isn't already used (duplicates fail the resource merge).
 
 ## Conventions
 

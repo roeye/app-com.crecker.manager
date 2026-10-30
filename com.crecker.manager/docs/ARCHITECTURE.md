@@ -146,8 +146,8 @@ override val actions = listOf(checkLastUpdate.action)
 
 1. יוצרים תיקייה `systems/<name>/`.
 2. יוצרים `object MySystem : ManagedSystem` עם `id` יציב, שם, קטגוריה ואייקון.
-3. אם יש הגדרות שמשותפות לכמה פעולות (למשל חיבור לשרת), מגדירים `settingsScreen` ברמת המערכת.
-4. מוסיפים את הפעולות (ראו למטה). כל הטקסטים נכנסים ל-`values/strings.xml` ול-`values-iw/strings.xml` עם prefix של המערכת (למשל `pais_`).
+3. אם יש הגדרות שמשותפות לכמה פעולות (למשל חיבור לשרת), מגדירים `settingsScreen` ברמת המערכת. לאתר עם חיבור FTP/SFTP בלבד: `RemoteSystemSettingsScreen`.
+4. מוסיפים את הפעולות (ראו למטה). קודם בודקים אם יש פעולה גנרית מוכנה, למשל `LastUpdateCheck`. כל הטקסטים נכנסים ל-`values/strings.xml` ול-`values-iw/strings.xml` עם prefix של המערכת (למשל `pais_`, `flight_`, `mail_`). לטקסטים משותפים ב-core יש prefix לפי הנושא (`remote_`, `last_update_`, `log_`, `run_duration_`). לפני שמוסיפים מחרוזת, מוודאים שהשם לא קיים כבר, כי שם כפול מכשיל את ה-build.
 5. מוסיפים `MySystem` ל-`SystemRegistry.systems`.
 6. מתעדים ב-`docs/systems/<name>.md` ומוסיפים שורה לטבלה ב-`README.md`.
 
