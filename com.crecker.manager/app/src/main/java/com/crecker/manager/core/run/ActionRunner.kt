@@ -102,8 +102,8 @@ class ActionRunner(
     }
 
     private inner class LiveLog(private val key: String) : ActionLog {
-        fun add(level: LogLevel, message: String, table: LogTable? = null) {
-            val entry = LogEntry(System.currentTimeMillis(), level, message, table)
+        fun add(level: LogLevel, message: String, table: LogTable? = null, output: String? = null) {
+            val entry = LogEntry(System.currentTimeMillis(), level, message, table, output)
             _runs.update { it + (key to it.getValue(key).let { r -> r.copy(entries = r.entries + entry) }) }
         }
 
@@ -113,6 +113,7 @@ class ActionRunner(
         override fun error(message: String) = add(LogLevel.ERROR, message)
         override fun table(title: String, headers: List<String>, rows: List<List<String>>) =
             add(LogLevel.INFO, title, LogTable(headers, rows))
+        override fun output(title: String, text: String) = add(LogLevel.INFO, title, output = text)
     }
 }
 

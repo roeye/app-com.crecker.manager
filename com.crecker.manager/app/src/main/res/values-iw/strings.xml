@@ -16,6 +16,8 @@
     <string name="time_ago">לפני %1$s</string>
     <string name="time_in_future">%1$s בעתיד</string>
     <string name="time_less_than_minute_ago">לפני פחות מדקה</string>
+    <string name="run_duration_seconds">%1$s שנ׳</string>
+    <string name="run_duration_minutes_seconds">%1$d דק׳ %2$d שנ׳</string>
 
     <!-- App settings -->
     <string name="settings_category_security">אבטחה</string>
@@ -209,6 +211,17 @@
 
     <!-- flightstatus -->
     <string name="flight_description">אתר מצב טיסות.</string>
+    <string name="flight_cron_short">משיכת נתונים</string>
+    <string name="flight_cron_title">ביצוע cron data retrieval</string>
+    <string name="flight_cron_description">מריצה ידנית את סקריפט ה-cron job של האתר בשרת (cronjobs/data_retrieval.php), למקרה שההרצה האוטומטית לא קרתה או נכשלה. מציגה את קוד ה-HTTP, כמה זמן לקחה הריצה ואת הפלט של הסקריפט.</string>
+    <string name="flight_cron_log_start">מריץ את %1$s (המתנה של עד %2$d דקות)</string>
+    <string name="flight_cron_log_response">HTTP %1$d · זמן ריצה %2$s · %3$s</string>
+    <string name="flight_cron_log_request_failed">✗ הבקשה נכשלה אחרי %1$s: %2$s</string>
+    <string name="flight_cron_log_no_output">הסקריפט לא החזיר פלט</string>
+    <string name="flight_cron_output_title">הפלט של הסקריפט (%1$s)</string>
+    <string name="flight_cron_output_truncated">(הפלט נחתך – מוצגים %1$d התווים הראשונים מתוך %2$d)</string>
+    <string name="flight_cron_log_php_fatal">בפלט יש שגיאת PHP (Fatal / Parse error) – כנראה שהסקריפט לא הסתיים</string>
+    <string name="flight_cron_log_php_warning">בפלט יש אזהרות PHP (Warning / Notice / Deprecated)</string>
     <string name="flight_check_description">מציגה מתי הקובץ flights_data.json בשרת עודכן לאחרונה (לפי שעון ישראל), וכמה זמן עבר מאז. אם הוא לא עודכן יותר מהסף, הוא מסומן כישן.</string>
 
     <!-- mail -->

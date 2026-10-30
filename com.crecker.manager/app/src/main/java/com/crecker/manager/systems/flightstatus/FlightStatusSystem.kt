@@ -1,5 +1,6 @@
 package com.crecker.manager.systems.flightstatus
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.runtime.Composable
@@ -37,13 +38,17 @@ object FlightStatusSystem : ManagedSystem {
         defaultStaleHours = DEFAULT_STALE_HOURS,
     )
 
-    override val actions = listOf(checkLastUpdate.action)
+    override val actions = listOf(
+        CronDataRetrieval.action,
+        checkLastUpdate.action,
+    )
 
     override val settingsScreen: @Composable (SystemSettings, () -> Unit) -> Unit =
         { settings, onBack -> RemoteSystemSettingsScreen(NAME, settings, DEFAULT_REMOTE_DIR, onBack) }
 
     @Composable
-    override fun StatusLine() {
-        LastRunLine(id, LastUpdateCheck.ID)
+    override fun StatusLine() = Column {
+        LastRunLine(id, CronDataRetrieval.ID, R.string.flight_cron_short)
+        LastRunLine(id, LastUpdateCheck.ID, R.string.last_update_short)
     }
 }

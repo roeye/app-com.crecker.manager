@@ -16,6 +16,8 @@ data class LogEntry(
     val level: LogLevel,
     val message: String,
     val table: LogTable? = null,
+    /** פלט גולמי (למשל של סקריפט בשרת) – מוצג כבלוק בגופן קבוע מתחת ל-[message]. */
+    val output: String? = null,
 )
 
 enum class RunStatus(@StringRes val label: Int) {
@@ -49,6 +51,9 @@ interface ActionLog {
     fun warn(message: String)
     fun error(message: String)
     fun table(title: String, headers: List<String>, rows: List<List<String>>)
+
+    /** בלוק של פלט גולמי מרובה שורות (גופן קבוע, גלילה אופקית), עם כותרת. */
+    fun output(title: String, text: String)
 }
 
 /** מה שפעולה מקבלת בזמן ריצה. */

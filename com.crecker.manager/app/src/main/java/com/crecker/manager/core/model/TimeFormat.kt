@@ -32,6 +32,16 @@ fun elapsedParts(elapsed: Duration): List<Pair<Int, Long>> {
     return parts.drop(first).take(2).filter { it.second > 0 }
 }
 
+/** משך ריצה: "3.2 שנ׳" מתחת לדקה, אחרת "2 דק׳ 5 שנ׳". */
+fun formatDuration(context: Context, duration: Duration): String {
+    val millis = duration.toMillis().coerceAtLeast(0)
+    if (millis < 60_000) {
+        return context.getString(R.string.run_duration_seconds, "%.1f".format(Locale.US, millis / 1000.0))
+    }
+    val seconds = millis / 1000
+    return context.getString(R.string.run_duration_minutes_seconds, seconds / 60, seconds % 60)
+}
+
 /**
  * כמה זמן עבר מ-[from] עד [now], למשל "לפני 2 ימ׳ 3 שע׳".
  * זמן עתידי (שעון לא מסונכרן בין השרת למכשיר) מוצג כ"בעתיד".

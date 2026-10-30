@@ -64,6 +64,7 @@ class RunHistory(context: Context, private val keepPerAction: Int = 20) {
                     .put("headers", JSONArray(t.headers))
                     .put("rows", JSONArray(t.rows.map { JSONArray(it) })))
             }
+            output?.let { put("output", it) }
         }
 
     private fun String.toRunRecord(): RunRecord {
@@ -92,6 +93,7 @@ class RunHistory(context: Context, private val keepPerAction: Int = 20) {
                 rows = List(rows.length()) { rows.getJSONArray(it).strings() },
             )
         },
+        output = if (isNull("output")) null else getString("output"),
     )
 
     private fun JSONArray.strings() = List(length()) { getString(it) }

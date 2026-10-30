@@ -18,6 +18,8 @@
     <string name="time_ago">%1$s ago</string>
     <string name="time_in_future">%1$s in the future</string>
     <string name="time_less_than_minute_ago">less than a minute ago</string>
+    <string name="run_duration_seconds">%1$s sec</string>
+    <string name="run_duration_minutes_seconds">%1$d min %2$d sec</string>
 
     <!-- App settings -->
     <string name="settings_category_security">Security</string>
@@ -211,6 +213,17 @@
 
     <!-- flightstatus -->
     <string name="flight_description">Flight status website.</string>
+    <string name="flight_cron_short">Data retrieval</string>
+    <string name="flight_cron_title">Run cron data retrieval</string>
+    <string name="flight_cron_description">Runs the site\'s cron job script (cronjobs/data_retrieval.php) on the server manually – for when the automatic cron run was missed or failed. Shows the HTTP status, how long the run took and the script\'s output.</string>
+    <string name="flight_cron_log_start">Running %1$s (waiting up to %2$d minutes)</string>
+    <string name="flight_cron_log_response">HTTP %1$d · run time %2$s · %3$s</string>
+    <string name="flight_cron_log_request_failed">✗ The request failed after %1$s: %2$s</string>
+    <string name="flight_cron_log_no_output">The script returned no output</string>
+    <string name="flight_cron_output_title">Script output (%1$s)</string>
+    <string name="flight_cron_output_truncated">(output truncated – showing the first %1$d of %2$d characters)</string>
+    <string name="flight_cron_log_php_fatal">The output contains a PHP error (Fatal / Parse error) – the script probably did not finish</string>
+    <string name="flight_cron_log_php_warning">The output contains PHP warnings (Warning / Notice / Deprecated)</string>
     <string name="flight_check_description">Shows when flights_data.json on the server was last updated (Israel time) and how long ago. If it was not updated for longer than the threshold, it is marked as stale.</string>
 
     <!-- mail -->

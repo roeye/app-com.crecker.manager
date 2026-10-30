@@ -39,14 +39,14 @@ com.crecker.manager/
 │   ├── settings/          SettingsStore, SystemSettings/ActionSettings (DataStore), MoveToSystemSettings,
 │   │                      SecretCipher (Keystore),
 │   │                      AppPreferences / ThemeMode / AppLanguage, Context.localized()
-│   ├── net/               HttpFetcher
+│   ├── net/               HttpFetcher, HttpText (פענוח תשובה לטקסט, HTML → טקסט, זיהוי שגיאות PHP)
 │   ├── remote/            RemoteUploader: FTP / FTPS / SFTP (העלאה + fileInfo), loadSystemRemote,
 │   │                      LastUpdateCheck (פעולה גנרית: "בדיקת עדכון אחרון" של קבצים בשרת)
 │   └── ui/                LoggedActionScreen, LogView, טפסי הגדרות (חיבור מרוחק, תזמון),
 │                          RemoteSystemSettingsScreen (מסך הגדרות מערכת עם חיבור לשרת בלבד)
 └── systems/               מערכת = תיקייה
     ├── paisresults/       cron data retrieval + בדיקת עדכון אחרון
-    ├── flightstatus/      בדיקת עדכון אחרון (קובץ אחד)
+    ├── flightstatus/      cron data retrieval (הרצת סקריפט בשרת) + בדיקת עדכון אחרון (קובץ אחד)
     └── mail/              תיבות דואר (IMAP, קריאה בלבד): ImapClient, MailParser, MailStore (מטמון)
 ```
 
@@ -69,7 +69,8 @@ com.crecker.manager/
 - **`Custom`**: מסך מותאם לחלוטין, לפעולות שלא מתאימות לתבנית של לוג (למשל תיבת הדואר ב-`mail`). אם צריך כמה מסכים, למשל רשימה ופריט, הניווט ביניהם נעשה בתוך המסך עצמו: state עם `rememberSaveable` ו-`BackHandler`.
 
 ### `ActionContext`, מה שפעולה מקבלת בריצה
-- `log`: `info` / `success` / `warn` / `error` / `table(...)`. מוצג חי ונשמר להיסטוריה.
+- `log`: `info` / `success` / `warn` / `error` / `table(...)` / `output(title, text)`. מוצג חי ונשמר להיסטוריה.
+  - `output`: בלוק של פלט גולמי מרובה שורות, למשל הפלט של סקריפט בשרת. מוצג בגופן קבוע, בלי שבירת שורות ועם גלילה אופקית. נשמר בהיסטוריה (`LogEntry.output`) ונכלל בהעתקה ובשיתוף.
 - `settings`: ההגדרות **של הפעולה הזו בלבד** (המפתחות מקבלים prefix של `systemId/actionId/`).
 - `systemSettings`: ההגדרות **של המערכת**, משותפות לכל הפעולות שלה (prefix של `systemId/`).
 - `workDir`: תיקייה זמנית ייחודית להרצה. **נמחקת אוטומטית** בסוף, גם בכשל או בביטול.
@@ -129,6 +130,7 @@ override val actions = listOf(checkLastUpdate.action)
 `core/model/TimeFormat.kt`:
 - `formatDateTime(instant, zone)`: `dd/MM/yyyy HH:mm:ss` באזור זמן נתון. לשעון ישראל יש קבוע: `ISRAEL_ZONE` (`Asia/Jerusalem`, כולל שעון קיץ).
 - `formatElapsed(context, from, now)`: "לפני 2 ימ׳ 3 שע׳". מוצגות עד שתי היחידות הגדולות. מתחת לדקה: "לפני פחות מדקה". זמן עתידי (הפרש שעונים בין שרת למכשיר): "… בעתיד".
+- `formatDuration(context, duration)`: משך ריצה. מתחת לדקה "3.2 שנ׳", ומעל דקה "2 דק׳ 5 שנ׳".
 
 ### תזמון
 - `ScheduleSection` (טופס) ו-`ActionScheduler` (WorkManager periodic, מינימום 15 דקות, רק כשיש רשת).

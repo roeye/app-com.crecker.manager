@@ -7,7 +7,7 @@
 | מערכת | פעולות | תיעוד |
 |---|---|---|
 | paisresults.co.il | ביצוע cron data retrieval, בדיקת עדכון אחרון (מתי כל קובץ עודכן בשרת, לפי שעון ישראל, עם התראה על קבצים ישנים) | [docs/systems/paisresults.md](docs/systems/paisresults.md) |
-| flightstatus.co.il | בדיקת עדכון אחרון של `flights_data.json` (לפי שעון ישראל, ישן אחרי שעה כברירת מחדל, עם התראה), עם חיבור FTP/SFTP משלו | [docs/systems/flightstatus.md](docs/systems/flightstatus.md) |
+| flightstatus.co.il | ביצוע cron data retrieval (הרצה ידנית של סקריפט ה-cron בשרת, עם זמן ריצה והפלט שלו), בדיקת עדכון אחרון של `flights_data.json` (לפי שעון ישראל, ישן אחרי שעה כברירת מחדל, עם התראה), עם חיבור FTP/SFTP משלו | [docs/systems/flightstatus.md](docs/systems/flightstatus.md) |
 | Mail | דואר נכנס מאוחד מכל התיבות (IMAP, **קריאה בלבד**, חסימת תוכן חיצוני ומעקב, שמירת קבצים מצורפים), בדיקת מיילים חדשים (אפשר לתזמן, עם התראה אחת מסכמת) | [docs/systems/mail.md](docs/systems/mail.md) |
 
 לכל מערכת יכולות להיות **הגדרות מערכת** (⚙ במסך המערכת), שמשותפות לכל הפעולות שלה, למשל פרטי החיבור לשרת. לכל פעולה יש גם הגדרות משלה (⚙ במסך הפעולה), כמו תזמון.

@@ -93,6 +93,7 @@ fun RunRecord.toShareText(context: Context, title: String): String = buildString
             appendLine(table.headers.joinToString(" | "))
             table.rows.forEach { appendLine(it.joinToString(" | ")) }
         }
+        entry.output?.let { appendLine(it) }
     }
 }
 
@@ -186,8 +187,24 @@ private fun LogLine(entry: LogEntry) {
                 entry.message,
                 style = MaterialTheme.typography.bodySmall,
                 color = LogColors.of(entry.level),
-                fontWeight = if (entry.table != null) FontWeight.Bold else null,
+                fontWeight = if (entry.table != null || entry.output != null) FontWeight.Bold else null,
             )
+        }
+        entry.output?.let { output ->
+            Surface(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                shape = RoundedCornerShape(8.dp),
+            ) {
+                Text(
+                    output,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    softWrap = false,
+                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(8.dp),
+                )
+            }
         }
         entry.table?.let { table ->
             Column(
